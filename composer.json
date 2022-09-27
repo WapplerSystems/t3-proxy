@@ -1,0 +1,31 @@
+{
+	"name": "wapplersystems/proxy",
+	"type": "typo3-cms-extension",
+	"description": "LINEAR products",
+	"autoload": {
+		"psr-4": {
+			"WapplerSystems\\Proxy\\": "Classes"
+		}
+	},
+	"keywords": [
+		"TYPO3 CMS"
+	],
+	"authors": [
+		{
+			"name": "Sven Wappler",
+			"email": "info@wappler.systems",
+			"role": "Developer"
+		}
+	],
+	"require": {
+		"typo3/cms-core": "^11"
+	},
+	"replace": {
+	},
+	"license": "GPL-2.0+",
+	"extra": {
+		"typo3/cms": {
+			"extension-key": "proxy"
+		}
+	}
+}
