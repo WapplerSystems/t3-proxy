@@ -3,12 +3,12 @@
 namespace WapplerSystems\Proxy\Plugin;
 
 use WapplerSystems\Proxy\Event\ProxyEvent;
+use WapplerSystems\Proxy\Proxy;
 
 abstract class AbstractPlugin
 {
 
-    // apply these methods only to those events whose request URL passes this filter
-    protected $url_pattern;
+    protected Proxy $proxy;
 
     public function onBeforeRequest(ProxyEvent $event)
     {
@@ -32,6 +32,7 @@ abstract class AbstractPlugin
 
     final public function subscribe($dispatcher)
     {
+        $this->proxy = $dispatcher;
 
         $dispatcher->addListener('request.before_send', function ($event) {
             $this->route('request.before_send', $event);
@@ -53,17 +54,6 @@ abstract class AbstractPlugin
     // dispatch based on filter
     private function route($event_name, ProxyEvent $event)
     {
-        $url = $event['request']->getUri();
-
-        // url filter provided and current request url does not match it
-        if ($this->url_pattern) {
-            if (starts_with($this->url_pattern, '/') && preg_match($this->url_pattern, $url) !== 1) {
-                return;
-            }
-            if (stripos($url, $this->url_pattern) === false) {
-                return;
-            }
-        }
 
         switch ($event_name) {
 

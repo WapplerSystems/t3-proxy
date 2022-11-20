@@ -3,7 +3,7 @@
 namespace WapplerSystems\Proxy;
 
 use Exception;
-use PHPHtmlParser\Dom;
+use TYPO3\CMS\Core\Cache\Frontend\FrontendInterface;
 use WapplerSystems\Proxy\Event\ProxyEvent;
 use WapplerSystems\Proxy\Http\Request;
 use WapplerSystems\Proxy\Http\Response;
@@ -16,22 +16,26 @@ class Proxy
 
     private $dispatcher;
 
-    private $request;
-    private $response;
+    private Request $request;
+    private Response $response;
 
-    private $output_buffering = true;
-    private $output_buffer = '';
+    private bool $outputBuffering = true;
+    private ?string $outputBuffer = '';
 
-    private $status_found = false;
+    private FrontendInterface $cache;
 
-    public function __construct()
+    private bool $statusFound = false;
+
+    private string $baseUrl;
+
+    public function __construct(FrontendInterface $cache)
     {
-        // do nothing for now
+        $this->cache = $cache;
     }
 
-    public function setOutputBuffering($output_buffering)
+    public function setOutputBuffering($outputBuffering)
     {
-        $this->output_buffering = $output_buffering;
+        $this->outputBuffering = $outputBuffering;
     }
 
     private function header_callback($ch, $headers)
@@ -43,7 +47,7 @@ class Proxy
         if (preg_match('/HTTP\/[\d.]+\s*(\d+)/', $headers, $matches) && stripos($headers, '200 Connection established') === false) {
 
             $this->response->setStatusCode($matches[1]);
-            $this->status_found = true;
+            $this->statusFound = true;
 
         } else if (count($parts) === 2) {
 
@@ -53,7 +57,7 @@ class Proxy
             // this must be a header: value line
             $this->response->headers->set($name, $value, false);
 
-        } else if ($this->status_found) {
+        } else if ($this->statusFound) {
 
             // this is hacky but until anyone comes up with a better way...
             $event = new ProxyEvent(['request' => $this->request, 'response' => $this->response, 'proxy' => &$this]);
@@ -76,8 +80,8 @@ class Proxy
         ]));
 
         // Do we buffer this piece of data for later output or not?
-        if ($this->output_buffering) {
-            $this->output_buffer .= $str;
+        if ($this->outputBuffering) {
+            $this->outputBuffer .= $str;
         }
 
         return $len;
@@ -191,10 +195,10 @@ class Proxy
             }
 
             // we have output waiting in the buffer?
-            $this->response->setContent($this->output_buffer);
+            $this->response->setContent($this->outputBuffer);
 
             // saves memory I would assume?
-            $this->output_buffer = null;
+            $this->outputBuffer = null;
         }
 
 
@@ -205,4 +209,48 @@ class Proxy
 
         return $this->response;
     }
+
+    /**
+     * @return Cache
+     */
+    public function getCache(): Cache
+    {
+        return $this->cache;
+    }
+
+    /**
+     * @param Cache $cache
+     */
+    public function setCache(Cache $cache): void
+    {
+        $this->cache = $cache;
+    }
+
+    public function sanitizeURL($url) : string {
+        $host = parse_url($url)['host'];
+        if ($host === null) {
+            // relative path
+            $url = $this->baseUrl.$url;
+            $url = str_replace('/./','/',$url);
+        }
+        return $url;
+    }
+
+    /**
+     * @return string
+     */
+    public function getBaseUrl(): string
+    {
+        return $this->baseUrl;
+    }
+
+    /**
+     * @param string $baseUrl
+     */
+    public function setBaseUrl(string $baseUrl): void
+    {
+        $this->baseUrl = $baseUrl;
+    }
+
+
 }

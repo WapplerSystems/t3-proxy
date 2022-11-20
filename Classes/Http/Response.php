@@ -65,6 +65,7 @@ class Response
 
     private $dom;
 
+
     public function __construct($content = '', $status = 200, $headers = [])
     {
 
@@ -109,8 +110,9 @@ class Response
     }
 
     public function getBody() {
+        /** @var Dom\Node\InnerNode $body */
         $body = $this->dom->find('body',0);
-        return $body->text;
+        return $body->innerhtml;
     }
 
     public function sendHeaders()
@@ -143,6 +145,14 @@ class Response
     {
         $this->sendHeaders();
         echo $this->content;
+    }
+
+    /**
+     * @return Dom
+     */
+    public function getDom(): Dom
+    {
+        return $this->dom;
     }
 
 }
