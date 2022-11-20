@@ -1,8 +1,8 @@
 <?php
 
-namespace Proxy\Plugin;
+namespace WapplerSystems\Proxy\Plugin;
 
-use Proxy\Event\ProxyEvent;
+use WapplerSystems\Proxy\Event\ProxyEvent;
 
 abstract class AbstractPlugin
 {
@@ -51,7 +51,7 @@ abstract class AbstractPlugin
     }
 
     // dispatch based on filter
-    final private function route($event_name, ProxyEvent $event)
+    private function route($event_name, ProxyEvent $event)
     {
         $url = $event['request']->getUri();
 
@@ -59,7 +59,8 @@ abstract class AbstractPlugin
         if ($this->url_pattern) {
             if (starts_with($this->url_pattern, '/') && preg_match($this->url_pattern, $url) !== 1) {
                 return;
-            } else if (stripos($url, $this->url_pattern) === false) {
+            }
+            if (stripos($url, $this->url_pattern) === false) {
                 return;
             }
         }
@@ -85,4 +86,3 @@ abstract class AbstractPlugin
     }
 }
 
-?>

@@ -1,11 +1,11 @@
 <?php
 
-namespace Proxy\Plugin;
+namespace WapplerSystems\Proxy\Plugin;
 
-use Proxy\Plugin\AbstractPlugin;
-use Proxy\Event\ProxyEvent;
 
 // do not buffer certain responses... echo contents immediately, and exit when done
+use WapplerSystems\Proxy\Event\ProxyEvent;
+
 class StreamPlugin extends AbstractPlugin
 {
 
@@ -57,5 +57,3 @@ class StreamPlugin extends AbstractPlugin
         }
     }
 }
-
-?>

@@ -1,9 +1,10 @@
 <?php
 
-namespace Proxy\Plugin;
+namespace WapplerSystems\Proxy\Plugin;
 
-use Proxy\Config;
-use Proxy\Event\ProxyEvent;
+
+use WapplerSystems\Proxy\Config;
+use WapplerSystems\Proxy\Event\ProxyEvent;
 
 class CorsPlugin extends AbstractPlugin
 {

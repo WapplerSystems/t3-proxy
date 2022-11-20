@@ -1,9 +1,9 @@
 <?php
 
-namespace Proxy\Plugin;
+namespace WapplerSystems\Proxy\Plugin;
 
-use Proxy\Plugin\AbstractPlugin;
-use Proxy\Event\ProxyEvent;
+
+use WapplerSystems\Proxy\Event\ProxyEvent;
 
 class CookiePlugin extends AbstractPlugin
 {
@@ -133,4 +133,3 @@ class CookiePlugin extends AbstractPlugin
     }
 }
 
-?>

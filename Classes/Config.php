@@ -1,6 +1,6 @@
 <?php
 
-namespace Proxy;
+namespace WapplerSystems\Proxy;
 
 // based off of this:
 // http://v3.golaravel.com/api/source-class-Laravel.Config.html#3-235

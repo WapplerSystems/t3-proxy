@@ -8,8 +8,9 @@
 			<trans-unit id="url">
 				<source>URL</source>
 			</trans-unit>
-			
-
+			<trans-unit id="baseUrl">
+				<source>Base URL</source>
+			</trans-unit>
 		</body>
 	</file>
 </xliff>

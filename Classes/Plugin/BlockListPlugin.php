@@ -1,11 +1,12 @@
 <?php
+namespace WapplerSystems\Proxy\Plugin;
 
-use Proxy\Plugin\AbstractPlugin;
-use Proxy\Event\ProxyEvent;
-use Proxy\Config;
 
 // https://proxylist.hidemyass.com/upload/
 // TODO: this file is not found to be existant in ./plugins/ when namespace is specified
+use WapplerSystems\Proxy\Config;
+use WapplerSystems\Proxy\Event\ProxyEvent;
+
 class BlockListPlugin extends AbstractPlugin
 {
 
@@ -23,7 +24,7 @@ class BlockListPlugin extends AbstractPlugin
 
             $ret = call_user_func($fnc_custom, compact('user_ip', 'user_ip_long', 'url', 'url_host'));
             if (!$ret) {
-                throw new Exception("Error: Access Denied!");
+                throw new \Exception("Error: Access Denied!");
             }
 
             return;
@@ -34,8 +35,7 @@ class BlockListPlugin extends AbstractPlugin
         foreach ($url_block as $ub) {
 
             if (strpos($url, $ub) !== false) {
-                throw new Exception("Error: Access to {$url} has been blocked!");
-                return;
+                throw new \Exception("Error: Access to {$url} has been blocked!");
             }
         }
 
@@ -60,10 +60,9 @@ class BlockListPlugin extends AbstractPlugin
             // ip matched and we are in block_mode
             // ip NOT matched and we are in allow mode
             if (($m && $action_block) || (!$m && !$action_block)) {
-                throw new Exception("Error: Access denied!");
+                throw new \Exception("Error: Access denied!");
             }
         }
     }
 }
 
-?>

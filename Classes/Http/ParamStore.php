@@ -1,6 +1,6 @@
 <?php
 
-namespace Proxy\Http;
+namespace WapplerSystems\Proxy\Http;
 
 /*
 

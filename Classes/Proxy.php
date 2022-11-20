@@ -1,12 +1,12 @@
 <?php
 
-namespace Proxy;
+namespace WapplerSystems\Proxy;
 
 use Exception;
-use Proxy\Event\ProxyEvent;
-use Proxy\Http\Request;
-use Proxy\Http\Response;
-use Proxy\Config;
+use PHPHtmlParser\Dom;
+use WapplerSystems\Proxy\Event\ProxyEvent;
+use WapplerSystems\Proxy\Http\Request;
+use WapplerSystems\Proxy\Http\Response;
 
 class Proxy
 {
@@ -45,7 +45,7 @@ class Proxy
             $this->response->setStatusCode($matches[1]);
             $this->status_found = true;
 
-        } else if (count($parts) == 2) {
+        } else if (count($parts) === 2) {
 
             $name = strtolower($parts[0]);
             $value = trim($parts[1]);
@@ -122,11 +122,13 @@ class Proxy
         }
     }
 
-    public function forward(Request $request, $url)
+    /**
+     * @param Request $request
+     * @return Response
+     * @throws Exception
+     */
+    public function forward(Request $request)
     {
-
-        // change request URL
-        $request->setUrl($url);
 
         // prepare request and response objects
         $this->request = $request;
@@ -152,7 +154,7 @@ class Proxy
         // this is probably a good place to add custom curl options that way other critical options below would overwrite that
         $config_options = Config::get('curl', []);
 
-        $options = array_merge_custom($options, $config_options);
+        $options = Helpers::array_merge($options, $config_options);
 
         $options[CURLOPT_HEADERFUNCTION] = [$this, 'header_callback'];
         $options[CURLOPT_WRITEFUNCTION] = [$this, 'write_callback'];
@@ -195,6 +197,7 @@ class Proxy
             $this->output_buffer = null;
         }
 
+
         $this->dispatch('request.complete', new ProxyEvent([
             'request' => $this->request,
             'response' => $this->response
@@ -203,5 +206,3 @@ class Proxy
         return $this->response;
     }
 }
-
-?>

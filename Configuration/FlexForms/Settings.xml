@@ -5,6 +5,14 @@
     <ROOT>
         <type>array</type>
         <el>
+            <settings.baseUrl>
+                <TCEforms>
+                    <label>LLL:EXT:proxy/Resources/Private/Language/locallang.xlf:baseUrl</label>
+                    <config>
+                        <type>input</type>
+                    </config>
+                </TCEforms>
+            </settings.baseUrl>
             <settings.url>
                 <TCEforms>
                     <label>LLL:EXT:proxy/Resources/Private/Language/locallang.xlf:url</label>

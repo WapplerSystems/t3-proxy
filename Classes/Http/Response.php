@@ -1,8 +1,14 @@
 <?php
 
-namespace Proxy\Http;
+namespace WapplerSystems\Proxy\Http;
 
-use Proxy\Http\ParamStore;
+
+use PHPHtmlParser\Dom;
+use PHPHtmlParser\Exceptions\ChildNotFoundException;
+use PHPHtmlParser\Exceptions\CircularException;
+use PHPHtmlParser\Exceptions\ContentLengthException;
+use PHPHtmlParser\Exceptions\LogicalException;
+use PHPHtmlParser\Exceptions\StrictException;
 
 class Response
 {
@@ -57,11 +63,13 @@ class Response
 
     private $content;
 
-    // getHeaderLines
+    private $dom;
+
     public function __construct($content = '', $status = 200, $headers = [])
     {
 
         $this->headers = new ParamStore($headers);
+        $this->dom = new Dom();
 
         $this->setContent($content);
         $this->setStatusCode($status);
@@ -85,11 +93,24 @@ class Response
     public function setContent($content)
     {
         $this->content = (string)$content;
+        try {
+            $this->dom->loadStr((string)$content);
+        } catch (ChildNotFoundException $e) {
+        } catch (CircularException $e) {
+        } catch (ContentLengthException $e) {
+        } catch (LogicalException $e) {
+        } catch (StrictException $e) {
+        }
     }
 
     public function getContent()
     {
         return $this->content;
+    }
+
+    public function getBody() {
+        $body = $this->dom->find('body',0);
+        return $body->text;
     }
 
     public function sendHeaders()
@@ -125,5 +146,3 @@ class Response
     }
 
 }
-
-?>

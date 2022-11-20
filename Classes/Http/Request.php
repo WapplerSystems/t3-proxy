@@ -1,8 +1,7 @@
 <?php
 
-namespace Proxy\Http;
+namespace WapplerSystems\Proxy\Http;
 
-use Proxy\Http\ParamStore;
 
 class Request
 {
@@ -384,6 +383,3 @@ class Request
         return $request;
     }
 }
-
-
-?>

@@ -18,7 +18,9 @@
 		}
 	],
 	"require": {
-		"typo3/cms-core": "^11"
+		"typo3/cms-core": "^11",
+		"1foru/php-html-parser": "^3",
+		"ext-curl": "*"
 	},
 	"replace": {
 	},

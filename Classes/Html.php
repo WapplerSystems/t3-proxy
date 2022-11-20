@@ -1,6 +1,6 @@
 <?php
 
-namespace Proxy;
+namespace WapplerSystems\Proxy;
 
 class Html
 {
@@ -190,5 +190,3 @@ class Html
         return $html;
     }
 }
-
-?>

@@ -1,11 +1,11 @@
 <?php
 
-namespace Proxy\Plugin;
+namespace WapplerSystems\Proxy\Plugin;
 
-use Proxy\Plugin\AbstractPlugin;
-use Proxy\Event\ProxyEvent;
-use Proxy\Config;
-use Proxy\Html;
+
+use WapplerSystems\Proxy\Config;
+use WapplerSystems\Proxy\Event\ProxyEvent;
+use WapplerSystems\Proxy\Html;
 
 class ProxifyPlugin extends AbstractPlugin
 {
@@ -211,5 +211,3 @@ class ProxifyPlugin extends AbstractPlugin
     }
 
 }
-
-?>

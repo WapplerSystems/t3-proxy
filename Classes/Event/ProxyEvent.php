@@ -1,6 +1,6 @@
 <?php
 
-namespace Proxy\Event;
+namespace WapplerSystems\Proxy\Event;
 
 use ArrayAccess;
 
@@ -40,4 +40,3 @@ class ProxyEvent implements ArrayAccess
 
 }
 
-?>
