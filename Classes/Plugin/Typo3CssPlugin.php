@@ -4,7 +4,9 @@ namespace WapplerSystems\Proxy\Plugin;
 
 
 use PhpParser\Node;
+use TYPO3\CMS\Core\Page\AssetCollector;
 use TYPO3\CMS\Core\Utility\DebugUtility;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 use WapplerSystems\Proxy\Event\ProxyEvent;
 use WapplerSystems\Proxy\Http\Request;
 use WapplerSystems\Proxy\Http\Response;
@@ -63,20 +65,23 @@ class Typo3CssPlugin extends AbstractAssetPlugin
         foreach ($links as $link) {
             $href = $link->getAttribute('href');
             if ($this->isOnWhiteList($href)) {
-
                 $href = $this->proxy->sanitizeURL($href);
 
+                /*
                 if (!$this->proxy->getCache()->has($href)) {
 
-                }
+                    $file = GeneralUtility::getUrl($href);
 
-                $requestHost = parse_url($this->request->getUri())['host'];
+                    $this->proxy->getCache()->set($cacheIdentifier,$file);
 
-                DebugUtility::debug($href);
+                    DebugUtility::debug('not in cache');
+                }*/
 
+                GeneralUtility::makeInstance(AssetCollector::class)->addStyleSheet(md5($href),$href);
 
+                //$requestHost = parse_url($this->request->getUri())['host'];
 
-
+                //DebugUtility::debug($href);
 
             }
 

@@ -27,6 +27,8 @@ class Proxy
     private bool $statusFound = false;
 
     private string $baseUrl;
+    private string $localBaseUri;
+    private string $pathPrefix;
 
     public function __construct(FrontendInterface $cache)
     {
@@ -210,27 +212,30 @@ class Proxy
         return $this->response;
     }
 
-    /**
-     * @return Cache
-     */
-    public function getCache(): Cache
+
+    public function getCache(): FrontendInterface
     {
         return $this->cache;
     }
 
-    /**
-     * @param Cache $cache
-     */
-    public function setCache(Cache $cache): void
-    {
-        $this->cache = $cache;
-    }
 
     public function sanitizeURL($url) : string {
         $host = parse_url($url)['host'];
         if ($host === null) {
             // relative path
             $url = $this->baseUrl.$url;
+            $url = str_replace('/./','/',$url);
+        }
+        return $url;
+    }
+
+
+    public function rewriteURL($url) : string {
+        $urlParts = parse_url($url);
+
+        if ($urlParts['host'] === null) {
+            // relative path
+            $url = $this->localBaseUri.$this->pathPrefix.$url;
             $url = str_replace('/./','/',$url);
         }
         return $url;
@@ -250,6 +255,38 @@ class Proxy
     public function setBaseUrl(string $baseUrl): void
     {
         $this->baseUrl = $baseUrl;
+    }
+
+    /**
+     * @return string
+     */
+    public function getLocalBaseUri(): string
+    {
+        return $this->localBaseUri;
+    }
+
+    /**
+     * @param string $localBaseUri
+     */
+    public function setLocalBaseUri(string $localBaseUri): void
+    {
+        $this->localBaseUri = $localBaseUri;
+    }
+
+    /**
+     * @return string
+     */
+    public function getPathPrefix(): string
+    {
+        return $this->pathPrefix;
+    }
+
+    /**
+     * @param string $pathPrefix
+     */
+    public function setPathPrefix(string $pathPrefix): void
+    {
+        $this->pathPrefix = $pathPrefix;
     }
 
 

@@ -81,7 +81,7 @@ class Response
         $this->status = $code;
     }
 
-    public function getStatusCode()
+    public function getStatusCode() : int
     {
         return $this->status;
     }

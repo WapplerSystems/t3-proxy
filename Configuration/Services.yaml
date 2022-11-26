@@ -14,5 +14,6 @@ services:
     arguments: ['proxy_assets']
 
   WapplerSystems\Proxy\Proxy:
+    public: true
     arguments:
       $cache: '@cache.proxy_assets'

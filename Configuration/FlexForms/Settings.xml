@@ -13,14 +13,22 @@
                     </config>
                 </TCEforms>
             </settings.baseUrl>
-            <settings.url>
+            <settings.startUrl>
                 <TCEforms>
                     <label>LLL:EXT:proxy/Resources/Private/Language/locallang.xlf:url</label>
                     <config>
                         <type>input</type>
                     </config>
                 </TCEforms>
-            </settings.url>
+            </settings.startUrl>
+            <settings.pathPrefix>
+                <TCEforms>
+                    <label>Path prefix</label>
+                    <config>
+                        <type>input</type>
+                    </config>
+                </TCEforms>
+            </settings.pathPrefix>
         </el>
     </ROOT>
 </T3DataStructure>

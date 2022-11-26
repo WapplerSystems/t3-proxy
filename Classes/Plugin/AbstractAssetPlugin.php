@@ -10,6 +10,11 @@ class AbstractAssetPlugin extends AbstractPlugin
     private array $whiteList = [];
 
 
+    public function __construct($whiteList = [])
+    {
+        $this->whiteList = $whiteList;
+    }
+
     protected function isOnWhiteList($path): bool
     {
         foreach ($this->whiteList as $pattern) {
