@@ -29,6 +29,14 @@
                     </config>
                 </TCEforms>
             </settings.pathPrefix>
+            <settings.pageTitleSuffix>
+                <TCEforms>
+                    <label>Page title suffix</label>
+                    <config>
+                        <type>input</type>
+                    </config>
+                </TCEforms>
+            </settings.pageTitleSuffix>
         </el>
     </ROOT>
 </T3DataStructure>

@@ -15,11 +15,13 @@
 
 namespace WapplerSystems\Proxy\Cache\Backend;
 
+use TYPO3\CMS\Core\Cache\Backend\AbstractBackend;
 use TYPO3\CMS\Core\Cache\Backend\SimpleFileBackend;
 use TYPO3\CMS\Core\Cache\Backend\TaggableBackendInterface;
 use TYPO3\CMS\Core\Cache\Exception;
 use TYPO3\CMS\Core\Cache\Exception\InvalidDataException;
 use TYPO3\CMS\Core\Cache\Frontend\FrontendInterface;
+use TYPO3\CMS\Core\Core\Environment;
 use TYPO3\CMS\Core\Service\OpcodeCacheService;
 use TYPO3\CMS\Core\Utility\DebugUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -29,7 +31,7 @@ use TYPO3\CMS\Core\Utility\StringUtility;
 /**
  *
  */
-class AssetFileBackend extends SimpleFileBackend implements TaggableBackendInterface
+class AssetFileBackend extends AbstractBackend implements TaggableBackendInterface
 {
     public const SEPARATOR = '^';
     public const EXPIRYTIME_FORMAT = 'YmdHis';
@@ -47,10 +49,11 @@ class AssetFileBackend extends SimpleFileBackend implements TaggableBackendInter
      */
     protected $cacheEntryIdentifiers = [];
 
+    protected $baseCacheDirectory = '';
+
 
     public function __construct($context, array $options = [])
     {
-        DebugUtility::debug($options);
         parent::__construct($context, $options);
     }
 
@@ -66,6 +69,8 @@ class AssetFileBackend extends SimpleFileBackend implements TaggableBackendInter
     public function setCache(FrontendInterface $cache)
     {
         parent::setCache($cache);
+
+        $this->baseCacheDirectory = Environment::getPublicPath() . '/typo3temp/tx_proxy/';
     }
 
     /**
@@ -143,16 +148,15 @@ class AssetFileBackend extends SimpleFileBackend implements TaggableBackendInter
     /**
      * Checks if a cache entry with the specified identifier exists.
      *
-     * @param string $entryIdentifier
+     * @param string $url
      * @return bool TRUE if such an entry exists, FALSE if not
      * @throws \InvalidArgumentException
      */
     public function has($url)
     {
         $entryIdentifier = md5($url);
-        if ($entryIdentifier !== PathUtility::basename($entryIdentifier)) {
-            throw new \InvalidArgumentException('The specified entry identifier must not contain a path segment.', 1282073034);
-        }
+
+
         return !$this->isCacheFileExpired($this->cacheDirectory . $entryIdentifier . $this->cacheEntryFileExtension);
     }
 
@@ -325,5 +329,11 @@ class AssetFileBackend extends SimpleFileBackend implements TaggableBackendInter
         }
         $pathAndFilename = $this->cacheDirectory . $entryIdentifier . $this->cacheEntryFileExtension;
         return $this->isCacheFileExpired($pathAndFilename) ? false : require $pathAndFilename;
+    }
+
+
+    private function determinFileType($url) {
+
+
     }
 }

@@ -65,7 +65,7 @@ class Typo3CssPlugin extends AbstractAssetPlugin
         foreach ($links as $link) {
             $href = $link->getAttribute('href');
             if ($this->isOnWhiteList($href)) {
-                $href = $this->proxy->sanitizeURL($href);
+                $href = $this->proxy->makeAbsoluteUrl($href);
 
                 /*
                 if (!$this->proxy->getCache()->has($href)) {

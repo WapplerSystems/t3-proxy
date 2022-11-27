@@ -15,6 +15,7 @@ use WapplerSystems\Proxy\Plugin\ImagePlugin;
 use WapplerSystems\Proxy\Plugin\LinkPlugin;
 use WapplerSystems\Proxy\Plugin\ProxifyPlugin;
 use WapplerSystems\Proxy\Plugin\Typo3CssPlugin;
+use WapplerSystems\Proxy\Plugin\Typo3TitlePlugin;
 use WapplerSystems\Proxy\Proxy;
 use WapplerSystems\Proxy\Typo3Cache;
 
@@ -32,10 +33,8 @@ class ProxyController extends ActionController
     public function processAction(string $path = ''): ResponseInterface
     {
 
-        DebugUtility::debug($this->settings);
-        DebugUtility::debug('TEST: '.$path);
-
-        DebugUtility::debug($this->request->getUri());
+        //DebugUtility::debug($this->settings);
+        //DebugUtility::debug('Path: '.$path);
 
         $uriBuilder = GeneralUtility::makeInstance(UriBuilder::class);
         $uriBuilder->setTargetPageUid($GLOBALS['TSFE']->id)->setCreateAbsoluteUri(true);
@@ -48,7 +47,6 @@ class ProxyController extends ActionController
             $url = $baseUrl.$path;
         }
 
-        DebugUtility::debug($url);
         $request = new Request('GET', $url);
 
         $proxy = GeneralUtility::makeInstance(Proxy::class);
@@ -57,12 +55,14 @@ class ProxyController extends ActionController
         $proxy->setPathPrefix($pathPrefix);
 
         //$proxy->addSubscriber(new ProxifyPlugin());
-        $proxy->addSubscriber(new Typo3CssPlugin(['oxygen-webhelp/app/main-page.css', 'oxygen-webhelp/template/oxygen.css']));
+        //$proxy->addSubscriber(new Typo3CssPlugin(['oxygen-webhelp/app/main-page.css', 'oxygen-webhelp/template/oxygen.css']));
         $proxy->addSubscriber(new ImagePlugin());
         $proxy->addSubscriber(new LinkPlugin());
+        $proxy->addSubscriber(new \LiNear\LinearProxy\Plugin\WebhelpPlugin());
+        $proxy->addSubscriber(new Typo3TitlePlugin());
 
         $response = $proxy->forward($request);
-        DebugUtility::debug($response->getStatusCode());
+        //DebugUtility::debug($response->getStatusCode());
         if ($response->getStatusCode() !== 200) {
 
             $message = 'No entry found!';

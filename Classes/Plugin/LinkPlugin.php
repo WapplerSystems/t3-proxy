@@ -31,6 +31,14 @@ class LinkPlugin extends AbstractPlugin
             $href = $this->proxy->rewriteURL($href);
             $link->setAttribute('href',$href);
         }
+
+        $links = $response->getDom()->find('form');
+        /** @var Node $link */
+        foreach ($links as $link) {
+            $href = $link->getAttribute('action');
+            $href = $this->proxy->rewriteURL($href);
+            $link->setAttribute('action',$href);
+        }
     }
 
 }

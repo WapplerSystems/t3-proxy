@@ -22,7 +22,7 @@ class Proxy
     private bool $outputBuffering = true;
     private ?string $outputBuffer = '';
 
-    private FrontendInterface $cache;
+    private ?FrontendInterface $cache;
 
     private bool $statusFound = false;
 
@@ -30,7 +30,7 @@ class Proxy
     private string $localBaseUri;
     private string $pathPrefix;
 
-    public function __construct(FrontendInterface $cache)
+    public function __construct(FrontendInterface $cache = null)
     {
         $this->cache = $cache;
     }
@@ -219,11 +219,13 @@ class Proxy
     }
 
 
-    public function sanitizeURL($url) : string {
+    public function makeAbsoluteUrl($url) : string {
         $host = parse_url($url)['host'];
         if ($host === null) {
             // relative path
-            $url = $this->baseUrl.$url;
+
+
+            $url = dirname($this->request->getUrl()).'/'.$url;
             $url = str_replace('/./','/',$url);
         }
         return $url;
@@ -235,8 +237,9 @@ class Proxy
 
         if ($urlParts['host'] === null) {
             // relative path
-            $url = $this->localBaseUri.$this->pathPrefix.$url;
-            $url = str_replace('/./','/',$url);
+            $url = dirname($this->request->getUrl()).'/'.$url;
+            $url = str_replace($this->baseUrl,$this->localBaseUri,$url);
+            //$url = str_replace('/./','/',$url);
         }
         return $url;
     }
