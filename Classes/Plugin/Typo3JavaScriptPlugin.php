@@ -5,7 +5,6 @@ namespace WapplerSystems\Proxy\Plugin;
 
 use PHPHtmlParser\Dom\Node\HtmlNode;
 use TYPO3\CMS\Core\Page\AssetCollector;
-use TYPO3\CMS\Core\Utility\DebugUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use WapplerSystems\Proxy\Event\ProxyEvent;
 use WapplerSystems\Proxy\Http\Request;

@@ -12,11 +12,6 @@ use WapplerSystems\Proxy\PageTitle\ProxyPageTitleProvider;
 class Typo3TitlePlugin extends AbstractPlugin
 {
 
-
-    public function __construct()
-    {
-    }
-
     public function onCompleted(ProxyEvent $event)
     {
 

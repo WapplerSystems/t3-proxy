@@ -7,6 +7,7 @@ use WapplerSystems\Proxy\Plugin\ImagePlugin;
 use WapplerSystems\Proxy\Plugin\LinkPlugin;
 use WapplerSystems\Proxy\Plugin\Typo3CssPlugin;
 use WapplerSystems\Proxy\Plugin\Typo3JavaScriptPlugin;
+use WapplerSystems\Proxy\Plugin\Typo3MetaPlugin;
 use WapplerSystems\Proxy\Plugin\Typo3TitlePlugin;
 
 if (!defined('TYPO3')) {
@@ -49,4 +50,8 @@ $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['proxy']['plugins'] = array_merge($GLOBAL
   'LinkPlugin' => LinkPlugin::class,
   'Typo3TitlePlugin' => Typo3TitlePlugin::class,
   'Typo3CssPlugin' => Typo3CssPlugin::class,
+  'Typo3MetaPlugin' => Typo3MetaPlugin::class,
 ]);
+
+
+
