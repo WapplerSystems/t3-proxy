@@ -5,18 +5,11 @@ namespace WapplerSystems\Proxy\Controller;
 
 use Psr\Http\Message\ResponseInterface;
 use TYPO3\CMS\Core\Http\ImmediateResponseException;
-use TYPO3\CMS\Core\Utility\DebugUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
 use TYPO3\CMS\Extbase\Mvc\Web\Routing\UriBuilder;
 use TYPO3\CMS\Frontend\Controller\ErrorController;
 use WapplerSystems\Proxy\Http\Request;
-use WapplerSystems\Proxy\Plugin\AbstractPlugin;
-use WapplerSystems\Proxy\Plugin\ConfigurablePlugin;
-use WapplerSystems\Proxy\Plugin\ImagePlugin;
-use WapplerSystems\Proxy\Plugin\LinkPlugin;
-use WapplerSystems\Proxy\Plugin\Typo3JavaScriptPlugin;
-use WapplerSystems\Proxy\Plugin\Typo3TitlePlugin;
 use WapplerSystems\Proxy\Proxy;
 
 /**
@@ -32,9 +25,6 @@ class ProxyController extends ActionController
      */
     public function processAction(string $path = ''): ResponseInterface
     {
-
-        //DebugUtility::debug($this->settings);
-        //DebugUtility::debug('Path: '.$path);
 
         $uriBuilder = GeneralUtility::makeInstance(UriBuilder::class);
         $uriBuilder->setTargetPageUid($GLOBALS['TSFE']->id)->setCreateAbsoluteUri(true);
@@ -63,9 +53,7 @@ class ProxyController extends ActionController
             }
         }
 
-
         $response = $proxy->forward($request);
-        //DebugUtility::debug($response->getStatusCode());
         if ($response->getStatusCode() !== 200) {
 
             $message = 'No entry found!';
@@ -77,12 +65,9 @@ class ProxyController extends ActionController
 
         }
 
-
         $html = $response->getBody();
-
 
         return $this->htmlResponse('<!-- proxy start -->' . $html . '<!-- proxy end -->');
     }
-
 
 }
