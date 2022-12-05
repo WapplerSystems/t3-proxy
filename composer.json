@@ -1,4 +1,7 @@
 {
+	"repositories": [
+		{ "type": "git", "url": "https://github.com/1forU/php-html-parser.git"}
+	],
 	"name": "wapplersystems/proxy",
 	"type": "typo3-cms-extension",
 	"description": "LINEAR products",
