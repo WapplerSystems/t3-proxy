@@ -3,8 +3,6 @@
 namespace WapplerSystems\Proxy\Plugin;
 
 
-use PhpParser\Node;
-use TYPO3\CMS\Core\Page\AssetCollector;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use WapplerSystems\Proxy\Event\ProxyEvent;
 use WapplerSystems\Proxy\Http\Request;
@@ -13,6 +11,11 @@ use WapplerSystems\Proxy\PageTitle\ProxyPageTitleProvider;
 
 class Typo3TitlePlugin extends AbstractPlugin
 {
+
+
+    public function __construct()
+    {
+    }
 
     public function onCompleted(ProxyEvent $event)
     {
@@ -25,7 +28,13 @@ class Typo3TitlePlugin extends AbstractPlugin
         $title = $response->getDom()->find('title');
         if (isset($title[0])) {
             $titleProvider = GeneralUtility::makeInstance(ProxyPageTitleProvider::class);
-            $titleProvider->setTitle($title[0]->innerHtml);
+            $title = $title[0]->innerHtml;
+
+            $suffix = $this->settings['pageTitleSuffix'] ?? null;
+            if ($suffix !== null) {
+                $title .= $suffix;
+            }
+            $titleProvider->setTitle($title);
         }
 
     }

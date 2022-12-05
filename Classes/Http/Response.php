@@ -9,6 +9,7 @@ use PHPHtmlParser\Exceptions\CircularException;
 use PHPHtmlParser\Exceptions\ContentLengthException;
 use PHPHtmlParser\Exceptions\LogicalException;
 use PHPHtmlParser\Exceptions\StrictException;
+use PHPHtmlParser\Options;
 
 class Response
 {
@@ -71,6 +72,11 @@ class Response
 
         $this->headers = new ParamStore($headers);
         $this->dom = new Dom();
+        $this->dom->setOptions(
+            (new Options())
+                ->setRemoveScripts(false)
+                ->setRemoveStyles(false)
+        );
 
         $this->setContent($content);
         $this->setStatusCode($status);

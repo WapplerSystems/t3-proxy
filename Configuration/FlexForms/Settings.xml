@@ -37,6 +37,32 @@
                     </config>
                 </TCEforms>
             </settings.pageTitleSuffix>
+            <settings.js.whitelist>
+                <TCEforms>
+                    <label>JavaScript whitelist</label>
+                    <config>
+                        <type>text</type>
+                    </config>
+                </TCEforms>
+            </settings.js.whitelist>
+            <settings.css.whitelist>
+                <TCEforms>
+                    <label>CSS whitelist</label>
+                    <config>
+                        <type>text</type>
+                    </config>
+                </TCEforms>
+            </settings.css.whitelist>
+            <settings.plugins>
+                <TCEforms>
+                    <label>Plugins</label>
+                    <config>
+                        <type>select</type>
+                        <renderType>selectMultipleSideBySide</renderType>
+                        <itemsProcFunc>WapplerSystems\Proxy\Backend\Form\PluginsRegistry->getPluginsList</itemsProcFunc>
+                    </config>
+                </TCEforms>
+            </settings.plugins>
         </el>
     </ROOT>
 </T3DataStructure>

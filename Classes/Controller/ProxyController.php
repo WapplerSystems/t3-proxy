@@ -11,13 +11,13 @@ use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
 use TYPO3\CMS\Extbase\Mvc\Web\Routing\UriBuilder;
 use TYPO3\CMS\Frontend\Controller\ErrorController;
 use WapplerSystems\Proxy\Http\Request;
+use WapplerSystems\Proxy\Plugin\AbstractPlugin;
+use WapplerSystems\Proxy\Plugin\ConfigurablePlugin;
 use WapplerSystems\Proxy\Plugin\ImagePlugin;
 use WapplerSystems\Proxy\Plugin\LinkPlugin;
-use WapplerSystems\Proxy\Plugin\ProxifyPlugin;
-use WapplerSystems\Proxy\Plugin\Typo3CssPlugin;
+use WapplerSystems\Proxy\Plugin\Typo3JavaScriptPlugin;
 use WapplerSystems\Proxy\Plugin\Typo3TitlePlugin;
 use WapplerSystems\Proxy\Proxy;
-use WapplerSystems\Proxy\Typo3Cache;
 
 /**
  *
@@ -54,12 +54,15 @@ class ProxyController extends ActionController
         $proxy->setBaseUrl($baseUrl);
         $proxy->setPathPrefix($pathPrefix);
 
-        //$proxy->addSubscriber(new ProxifyPlugin());
-        //$proxy->addSubscriber(new Typo3CssPlugin(['oxygen-webhelp/app/main-page.css', 'oxygen-webhelp/template/oxygen.css']));
-        $proxy->addSubscriber(new ImagePlugin());
-        $proxy->addSubscriber(new LinkPlugin());
-        $proxy->addSubscriber(new \LiNear\LinearProxy\Plugin\WebhelpPlugin());
-        $proxy->addSubscriber(new Typo3TitlePlugin());
+
+        $pluginNames = explode(',',$this->settings['plugins'] ?? '');
+
+        foreach ($pluginNames as $pluginName) {
+            if (isset($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['proxy']['plugins'][$pluginName])) {
+                $proxy->addSubscriber(GeneralUtility::makeInstance($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['proxy']['plugins'][$pluginName], $this->settings));
+            }
+        }
+
 
         $response = $proxy->forward($request);
         //DebugUtility::debug($response->getStatusCode());

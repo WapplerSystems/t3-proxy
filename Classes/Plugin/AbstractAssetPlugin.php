@@ -7,13 +7,8 @@ namespace WapplerSystems\Proxy\Plugin;
 class AbstractAssetPlugin extends AbstractPlugin
 {
 
-    private array $whiteList = [];
+    protected array $whiteList;
 
-
-    public function __construct($whiteList = [])
-    {
-        $this->whiteList = $whiteList;
-    }
 
     protected function isOnWhiteList($path): bool
     {

@@ -10,6 +10,13 @@ abstract class AbstractPlugin
 
     protected Proxy $proxy;
 
+    protected array $settings;
+
+    public function __construct($settings)
+    {
+        $this->settings = $settings;
+    }
+
     public function onBeforeRequest(ProxyEvent $event)
     {
         // fired right before a request is being sent to a proxy
