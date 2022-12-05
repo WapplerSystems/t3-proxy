@@ -22,6 +22,7 @@ ExtensionUtility::configurePlugin(
         ProxyController::class => 'process',
     ],
     [
+        ProxyController::class => 'process',
     ]
 );
 
