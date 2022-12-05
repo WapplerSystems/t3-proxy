@@ -234,6 +234,7 @@ class Proxy
 
     public function rewriteURL($url) : string {
         $urlParts = parse_url($url);
+        if (str_starts_with($url,'#')) return $url;
 
         if ($urlParts['host'] === null) {
             // relative path
