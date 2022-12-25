@@ -219,29 +219,30 @@ class Proxy
     }
 
 
-    public function makeAbsoluteUrl($url) : string {
+    public function makeAbsoluteUrl($url): string
+    {
         $host = parse_url($url)['host'];
         if ($host === null) {
             // relative path
-
-
-            $url = dirname($this->request->getUrl()).'/'.$url;
-            $url = str_replace('/./','/',$url);
+            $url = dirname($this->request->getUrl()) . '/' . $url;
+            $url = str_replace('/./', '/', $url);
         }
         return $url;
     }
 
 
-    public function rewriteURL($url) : string {
+    public function rewriteURL($url): string
+    {
         $urlParts = parse_url($url);
-        if (str_starts_with($url,'#')) return $url;
+        if (str_starts_with($url, '#')) return $url;
 
         if ($urlParts['host'] === null) {
             // relative path
-            $url = dirname($this->request->getUrl()).'/'.$url;
-            $url = str_replace($this->baseUrl,$this->localBaseUri,$url);
+            $url = dirname($this->request->getUrl()) . '/' . $url;
+            $url = str_replace($this->baseUrl, $this->localBaseUri, $url);
             //$url = str_replace('/./','/',$url);
         }
+        $url = $this->removeDoubleDotsFromURL($url);
         return $url;
     }
 
@@ -291,6 +292,22 @@ class Proxy
     public function setPathPrefix(string $pathPrefix): void
     {
         $this->pathPrefix = $pathPrefix;
+    }
+
+    private function removeDoubleDotsFromURL($url): string
+    {
+
+        while (str_contains($url, '/../')) {
+            $parts = explode('/', $url);
+            for ($i = 1, $iMax = count($parts); $i < $iMax; $i++) {
+                if ($parts[$i] === '..') {
+                    unset($parts[$i - 1], $parts[$i]);
+                    break;
+                }
+            }
+            $url = implode('/', $parts);
+        }
+        return $url;
     }
 
 
