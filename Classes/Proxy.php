@@ -11,9 +11,6 @@ use WapplerSystems\Proxy\Http\Response;
 class Proxy
 {
 
-    // Proxy script version
-    const VERSION = '5.2.0';
-
     private $dispatcher;
 
     private Request $request;
@@ -28,7 +25,6 @@ class Proxy
 
     private string $baseUrl;
     private string $localBaseUri;
-    private string $pathPrefix;
 
     public function __construct(FrontendInterface $cache = null)
     {
@@ -240,10 +236,8 @@ class Proxy
             // relative path
             $url = dirname($this->request->getUrl()) . '/' . $url;
             $url = str_replace($this->baseUrl, $this->localBaseUri, $url);
-            //$url = str_replace('/./','/',$url);
         }
-        $url = $this->removeDoubleDotsFromURL($url);
-        return $url;
+        return $this->removeDoubleDotsFromURL($url);
     }
 
     /**
@@ -276,22 +270,6 @@ class Proxy
     public function setLocalBaseUri(string $localBaseUri): void
     {
         $this->localBaseUri = $localBaseUri;
-    }
-
-    /**
-     * @return string
-     */
-    public function getPathPrefix(): string
-    {
-        return $this->pathPrefix;
-    }
-
-    /**
-     * @param string $pathPrefix
-     */
-    public function setPathPrefix(string $pathPrefix): void
-    {
-        $this->pathPrefix = $pathPrefix;
     }
 
     private function removeDoubleDotsFromURL($url): string

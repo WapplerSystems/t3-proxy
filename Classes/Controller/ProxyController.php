@@ -31,7 +31,6 @@ class ProxyController extends ActionController
         $localBaseUri = $uriBuilder->buildFrontendUri();
 
         $url = $this->settings['startUrl'];
-        $pathPrefix = $this->settings['pathPrefix'];
         $baseUrl = $this->settings['baseUrl'];
         if ($path !== '') {
             $url = $baseUrl.$path;
@@ -42,7 +41,6 @@ class ProxyController extends ActionController
         $proxy = GeneralUtility::makeInstance(Proxy::class);
         $proxy->setLocalBaseUri($localBaseUri);
         $proxy->setBaseUrl($baseUrl);
-        $proxy->setPathPrefix($pathPrefix);
 
 
         $pluginNames = explode(',',$this->settings['plugins'] ?? '');

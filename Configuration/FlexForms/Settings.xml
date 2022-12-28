@@ -21,14 +21,6 @@
                     </config>
                 </TCEforms>
             </settings.startUrl>
-            <settings.pathPrefix>
-                <TCEforms>
-                    <label>Path prefix</label>
-                    <config>
-                        <type>input</type>
-                    </config>
-                </TCEforms>
-            </settings.pathPrefix>
             <settings.pageTitleSuffix>
                 <TCEforms>
                     <label>Page title suffix</label>
