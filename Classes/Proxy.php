@@ -44,7 +44,7 @@ class Proxy
         $this->outputBuffering = $outputBuffering;
     }
 
-    private function header_callback($ch, $headers)
+    private function headerCallback($ch, $headers)
     {
         $parts = explode(":", $headers, 2);
 
@@ -75,7 +75,7 @@ class Proxy
         return strlen($headers);
     }
 
-    private function write_callback($ch, $str)
+    private function writeCallback($ch, $str)
     {
 
         $len = strlen($str);
@@ -166,8 +166,8 @@ class Proxy
 
         $options = Helpers::array_merge($options, $config_options);
 
-        $options[CURLOPT_HEADERFUNCTION] = [$this, 'header_callback'];
-        $options[CURLOPT_WRITEFUNCTION] = [$this, 'write_callback'];
+        $options[CURLOPT_HEADERFUNCTION] = [$this, 'headerCallback'];
+        $options[CURLOPT_WRITEFUNCTION] = [$this, 'writeCallback'];
 
         // Notify any listeners that the request is ready to be sent, and this is your last chance to make any modifications.
         $this->dispatch('request.before_send', new ProxyEvent([
