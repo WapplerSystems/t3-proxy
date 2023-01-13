@@ -1,4 +1,12 @@
 <?php
+declare(strict_types=1);
+
+/*
+ * This file is part of the "proxy" Extension for TYPO3 CMS.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE.txt file that was distributed with this source code.
+ */
 
 namespace WapplerSystems\Proxy;
 
@@ -44,7 +52,7 @@ class Proxy
         // if using proxy - we ignore this header: HTTP/1.1 200 Connection established
         if (preg_match('/HTTP\/[\d.]+\s*(\d+)/', $headers, $matches) && stripos($headers, '200 Connection established') === false) {
 
-            $this->response->setStatusCode($matches[1]);
+            $this->response->setStatusCode((int)$matches[1]);
             $this->statusFound = true;
 
         } else if (count($parts) === 2) {

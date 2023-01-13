@@ -1,4 +1,12 @@
 <?php
+declare(strict_types=1);
+
+/*
+ * This file is part of the "proxy" Extension for TYPO3 CMS.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE.txt file that was distributed with this source code.
+ */
 
 namespace WapplerSystems\Proxy\Controller;
 
@@ -33,7 +41,7 @@ class ProxyController extends ActionController
         $url = $this->settings['startUrl'];
         $baseUrl = $this->settings['baseUrl'];
         if ($path !== '') {
-            $url = $baseUrl.$path;
+            $url = $baseUrl . $path;
         }
 
         $request = new Request('GET', $url);
@@ -43,7 +51,7 @@ class ProxyController extends ActionController
         $proxy->setBaseUrl($baseUrl);
 
 
-        $pluginNames = explode(',',$this->settings['plugins'] ?? '');
+        $pluginNames = explode(',', $this->settings['plugins'] ?? '');
 
         foreach ($pluginNames as $pluginName) {
             if (isset($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['proxy']['plugins'][$pluginName])) {

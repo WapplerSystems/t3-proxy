@@ -1,4 +1,12 @@
 <?php
+declare(strict_types=1);
+
+/*
+ * This file is part of the "proxy" Extension for TYPO3 CMS.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE.txt file that was distributed with this source code.
+ */
 
 namespace WapplerSystems\Proxy\Plugin;
 
@@ -15,7 +23,7 @@ class Typo3CssPlugin extends AbstractAssetPlugin
 
     public function onCompleted(ProxyEvent $event)
     {
-        $this->whiteList = explode("\n",$this->settings['css']['whitelist'] ?? '');
+        $this->whiteList = explode("\n", $this->settings['css']['whitelist'] ?? '');
 
         /** @var Response $response */
         $response = $event['response'];
@@ -39,7 +47,7 @@ class Typo3CssPlugin extends AbstractAssetPlugin
                     DebugUtility::debug('not in cache');
                 }*/
 
-                GeneralUtility::makeInstance(AssetCollector::class)->addStyleSheet(md5($href),$href);
+                GeneralUtility::makeInstance(AssetCollector::class)->addStyleSheet(md5($href), $href);
 
                 //$requestHost = parse_url($this->request->getUri())['host'];
 
@@ -55,7 +63,6 @@ class Typo3CssPlugin extends AbstractAssetPlugin
 
 
     }
-
 
 
 }

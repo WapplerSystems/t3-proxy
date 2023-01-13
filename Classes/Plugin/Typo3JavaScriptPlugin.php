@@ -1,4 +1,12 @@
 <?php
+declare(strict_types=1);
+
+/*
+ * This file is part of the "proxy" Extension for TYPO3 CMS.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE.txt file that was distributed with this source code.
+ */
 
 namespace WapplerSystems\Proxy\Plugin;
 
@@ -15,7 +23,7 @@ class Typo3JavaScriptPlugin extends AbstractAssetPlugin
 
     public function onCompleted(ProxyEvent $event)
     {
-        $this->whiteList = explode("\n",$this->settings['js']['whitelist'] ?? '');
+        $this->whiteList = explode("\n", $this->settings['js']['whitelist'] ?? '');
 
         /** @var Response $response */
         $response = $event['response'];
@@ -32,20 +40,19 @@ class Typo3JavaScriptPlugin extends AbstractAssetPlugin
                 $attributes = [];
                 $src = $this->proxy->makeAbsoluteUrl($src);
                 foreach ($script->getAttributes() as $name => $attribute) {
-                    if (str_starts_with($name,'data-')) {
-                        if (str_ends_with($attribute,'.js')) {
+                    if (str_starts_with($name, 'data-')) {
+                        if (str_ends_with($attribute, '.js')) {
                             $attribute = $this->proxy->makeAbsoluteUrl($attribute);
                         }
                         $attributes[$name] = $attribute;
                     }
                 }
-                GeneralUtility::makeInstance(AssetCollector::class)->addJavaScript(md5($src),$src,$attributes);
+                GeneralUtility::makeInstance(AssetCollector::class)->addJavaScript(md5($src), $src, $attributes);
 
             }
         }
 
     }
-
 
 
 }

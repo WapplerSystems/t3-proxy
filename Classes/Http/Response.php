@@ -1,4 +1,12 @@
 <?php
+declare(strict_types=1);
+
+/*
+ * This file is part of the "proxy" Extension for TYPO3 CMS.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE.txt file that was distributed with this source code.
+ */
 
 namespace WapplerSystems\Proxy\Http;
 
@@ -58,7 +66,7 @@ class Response
         505 => 'Unsupported Version'
     ];
 
-    public $status;
+    public int $status;
 
     public $headers;
 
@@ -82,7 +90,7 @@ class Response
         $this->setStatusCode($status);
     }
 
-    public function setStatusCode($code)
+    public function setStatusCode(int $code): void
     {
         $this->status = $code;
     }
