@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<xliff version="1.0">
+  <file source-language="en" datatype="plaintext" original="messages" date="2015-02-17T00:33:20Z" target-language="no">
+    <header>
+      <generator>LFEditor</generator>
+    </header>
+    <body>
+      <trans-unit id="url">
+        <source>URL</source>
+        <target state="needs-translation">URL</target>
+      </trans-unit>
+      <trans-unit id="baseUrl">
+        <source>Base URL</source>
+        <target state="needs-translation">Base URL</target>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>
