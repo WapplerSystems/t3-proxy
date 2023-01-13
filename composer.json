@@ -1,7 +1,4 @@
 {
-	"repositories": [
-		{ "type": "git", "url": "https://github.com/1forU/php-html-parser.git"}
-	],
 	"name": "wapplersystems/proxy",
 	"type": "typo3-cms-extension",
 	"description": "TYPO3 proxy extension for showing content of another system inside TYPO3",
@@ -22,7 +19,7 @@
 	],
 	"require": {
 		"typo3/cms-core": "^11",
-		"1foru/php-html-parser": "^3",
+		"wapplersystems/php-html-parser": "^1",
 		"ext-curl": "*"
 	},
 	"replace": {
