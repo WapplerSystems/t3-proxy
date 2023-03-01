@@ -187,6 +187,7 @@ class Proxy
             $options[CURLOPT_HTTPHEADER] = explode("\r\n", $this->request->getRawHeaders());
             $options[CURLOPT_CUSTOMREQUEST] = $this->request->getMethod();
             $options[CURLOPT_POSTFIELDS] = $this->request->getRawBody();
+            $options[CURLOPT_USERAGENT] = 'PhpProxy';
 
             $ch = curl_init();
             curl_setopt_array($ch, $options);
