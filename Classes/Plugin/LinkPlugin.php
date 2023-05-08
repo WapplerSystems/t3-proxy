@@ -32,7 +32,9 @@ class LinkPlugin extends AbstractPlugin
         /** @var Node $link */
         foreach ($links as $link) {
             $href = $link->getAttribute('href');
-            $href = $this->proxy->rewriteURL($href);
+            if ($href !== null && $href !== '') {
+                $href = $this->proxy->rewriteURL($href);
+            }
             $link->setAttribute('href', $href);
         }
 
@@ -40,7 +42,9 @@ class LinkPlugin extends AbstractPlugin
         /** @var Node $link */
         foreach ($links as $link) {
             $href = $link->getAttribute('action');
-            $href = $this->proxy->rewriteURL($href);
+            if ($href !== null && $href !== '') {
+                $href = $this->proxy->rewriteURL($href);
+            }
             $link->setAttribute('action', $href);
         }
     }
