@@ -9,10 +9,10 @@ $EM_CONF['proxy'] = [
     'author_company' => 'WapplerSystems',
     'state' => 'stable',
     'clearCacheOnLoad' => 1,
-    'version' => '11.0.0',
+    'version' => '12.0.0',
     'constraints' => [
         'depends' => [
-            'typo3' => '11.0.0-11.5.99',
+            'typo3' => '12.4.0-12.4.99',
         ],
         'conflicts' => [
         ],
