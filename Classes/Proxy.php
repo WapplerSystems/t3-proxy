@@ -278,6 +278,9 @@ class Proxy
      */
     public function setLocalBaseUri(string $localBaseUri): void
     {
+        if (!str_ends_with($localBaseUri, '/')) {
+            $localBaseUri .= '/';
+        }
         $this->localBaseUri = $localBaseUri;
     }
 
