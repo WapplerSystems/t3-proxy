@@ -34,7 +34,7 @@ class Proxy
     private string $baseUrl;
     private string $localBaseUri;
 
-    public function __construct(FrontendInterface $cache = null)
+    public function __construct(?FrontendInterface $cache = null)
     {
         $this->cache = $cache;
     }
