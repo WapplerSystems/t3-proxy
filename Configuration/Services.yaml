@@ -6,7 +6,6 @@ services:
 
   WapplerSystems\Proxy\:
     resource: '../Classes/*'
-    exclude: '../Classes/Domain/Model/*'
 
   #cache.proxy_assets:
   #  class: TYPO3\CMS\Core\Cache\Frontend\FrontendInterface

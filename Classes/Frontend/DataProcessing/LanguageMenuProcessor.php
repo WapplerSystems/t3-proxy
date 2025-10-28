@@ -11,19 +11,21 @@ declare(strict_types=1);
 namespace WapplerSystems\Proxy\Frontend\DataProcessing;
 
 
+use Symfony\Component\DependencyInjection\Attribute\Autoconfigure;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 
+#[Autoconfigure(public: true)]
 class LanguageMenuProcessor extends \TYPO3\CMS\Frontend\DataProcessing\LanguageMenuProcessor
 {
 
-    public function __construct()
+    protected function validateConfiguration()
     {
-        parent::__construct();
-
         $this->allowedConfigurationKeys = array_merge($this->allowedConfigurationKeys,[
             'overrides',
             'overrides.',
         ]);
+
+        parent::validateConfiguration();
     }
 
     /**
@@ -38,14 +40,11 @@ class LanguageMenuProcessor extends \TYPO3\CMS\Frontend\DataProcessing\LanguageM
         $this->cObj = $cObj;
         $this->processorConfiguration = $processorConfiguration;
 
-        // Get Configuration
-        $this->menuTargetVariableName = $this->getConfigurationValue('as');
-
         // Validate and Build Configuration
         $this->validateAndBuildConfiguration();
 
         // Process Configuration
-        $menuContentObject = $cObj->getContentObject('HMENU');
+        $menuContentObject = $this->contentObjectFactory->getContentObject('HMENU', $cObj->getRequest(), $cObj);
         $renderedMenu = $menuContentObject->render($this->menuConfig);
         if (!$renderedMenu) {
             return $processedData;
@@ -65,7 +64,7 @@ class LanguageMenuProcessor extends \TYPO3\CMS\Frontend\DataProcessing\LanguageM
             }
         }
         // Return processed data
-        $processedData[$this->menuTargetVariableName] = $processedMenu;
+        $processedData[$this->getConfigurationValue('as')] = $processedMenu;
         return $processedData;
     }
 

@@ -34,9 +34,8 @@ class ProxyController extends ActionController
     public function processAction(string $path = ''): ResponseInterface
     {
 
-        $uriBuilder = GeneralUtility::makeInstance(UriBuilder::class);
-        $uriBuilder->setTargetPageUid($GLOBALS['TSFE']->id)->setCreateAbsoluteUri(true);
-        $localBaseUri = $uriBuilder->buildFrontendUri();
+        $this->uriBuilder->setTargetPageUid($GLOBALS['TSFE']->id)->setCreateAbsoluteUri(true);
+        $localBaseUri = $this->uriBuilder->buildFrontendUri();
 
         $url = $this->settings['startUrl'];
         $baseUrl = $this->settings['baseUrl'];
