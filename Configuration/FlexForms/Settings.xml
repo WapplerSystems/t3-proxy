@@ -6,62 +6,48 @@
         <type>array</type>
         <el>
             <settings.baseUrl>
-                <TCEforms>
-                    <label>LLL:EXT:proxy/Resources/Private/Language/locallang.xlf:baseUrl</label>
-                    <config>
-                        <type>input</type>
-                    </config>
-                </TCEforms>
+                <label>LLL:EXT:proxy/Resources/Private/Language/locallang.xlf:baseUrl</label>
+                <config>
+                    <type>input</type>
+                </config>
             </settings.baseUrl>
             <settings.startUrl>
-                <TCEforms>
-                    <label>LLL:EXT:proxy/Resources/Private/Language/locallang.xlf:url</label>
-                    <config>
-                        <type>input</type>
-                    </config>
-                </TCEforms>
+                <label>LLL:EXT:proxy/Resources/Private/Language/locallang.xlf:url</label>
+                <config>
+                    <type>input</type>
+                </config>
             </settings.startUrl>
             <settings.pageTitleSuffix>
-                <TCEforms>
-                    <label>Page title suffix</label>
-                    <config>
-                        <type>input</type>
-                    </config>
-                </TCEforms>
+                <label>Page title suffix</label>
+                <config>
+                    <type>input</type>
+                </config>
             </settings.pageTitleSuffix>
             <settings.js.whitelist>
-                <TCEforms>
-                    <label>JavaScript whitelist</label>
-                    <config>
-                        <type>text</type>
-                    </config>
-                </TCEforms>
+                <label>JavaScript whitelist</label>
+                <config>
+                    <type>text</type>
+                </config>
             </settings.js.whitelist>
             <settings.css.whitelist>
-                <TCEforms>
-                    <label>CSS whitelist</label>
-                    <config>
-                        <type>text</type>
-                    </config>
-                </TCEforms>
+                <label>CSS whitelist</label>
+                <config>
+                    <type>text</type>
+                </config>
             </settings.css.whitelist>
             <settings.meta.whitelist>
-                <TCEforms>
-                    <label>Meta whitelist</label>
-                    <config>
-                        <type>text</type>
-                    </config>
-                </TCEforms>
+                <label>Meta whitelist</label>
+                <config>
+                    <type>text</type>
+                </config>
             </settings.meta.whitelist>
             <settings.plugins>
-                <TCEforms>
-                    <label>Plugins</label>
-                    <config>
-                        <type>select</type>
-                        <renderType>selectMultipleSideBySide</renderType>
-                        <itemsProcFunc>WapplerSystems\Proxy\Backend\Form\PluginsRegistry->getPluginsList</itemsProcFunc>
-                    </config>
-                </TCEforms>
+                <label>Plugins</label>
+                <config>
+                    <type>select</type>
+                    <renderType>selectMultipleSideBySide</renderType>
+                    <itemsProcFunc>WapplerSystems\Proxy\Backend\Form\PluginsRegistry->getPluginsList</itemsProcFunc>
+                </config>
             </settings.plugins>
         </el>
     </ROOT>
