@@ -59,7 +59,7 @@ class AssetFileBackend extends AbstractBackend implements TaggableBackendInterfa
      *
      * @param FrontendInterface $cache The cache frontend
      */
-    public function setCache(FrontendInterface $cache)
+    public function setCache(FrontendInterface $cache): void
     {
         parent::setCache($cache);
 
@@ -78,7 +78,7 @@ class AssetFileBackend extends AbstractBackend implements TaggableBackendInterfa
      * @throws Exception if the directory does not exist or is not writable or exceeds the maximum allowed path length, or if no cache frontend has been set.
      * @throws \InvalidArgumentException
      */
-    public function set($entryIdentifier, $data, array $tags = [], $lifetime = null)
+    public function set(string $entryIdentifier, string $data, array $tags = [], ?int $lifetime = null): void
     {
         if (!is_string($data)) {
             throw new InvalidDataException('The specified data is of type "' . gettype($data) . '" but a string is expected.', 1204481674);
@@ -119,7 +119,7 @@ class AssetFileBackend extends AbstractBackend implements TaggableBackendInterfa
      * @return mixed The cache entry's content as a string or FALSE if the cache entry could not be loaded
      * @throws \InvalidArgumentException If identifier is invalid
      */
-    public function get($entryIdentifier)
+    public function get(string $entryIdentifier): mixed
     {
         if ($entryIdentifier !== PathUtility::basename($entryIdentifier)) {
             throw new \InvalidArgumentException('The specified entry identifier must not contain a path segment.', 1282073033);
@@ -145,7 +145,7 @@ class AssetFileBackend extends AbstractBackend implements TaggableBackendInterfa
      * @return bool TRUE if such an entry exists, FALSE if not
      * @throws \InvalidArgumentException
      */
-    public function has($url)
+    public function has(string $url): bool
     {
         $entryIdentifier = md5($url);
 
@@ -162,7 +162,7 @@ class AssetFileBackend extends AbstractBackend implements TaggableBackendInterfa
      * @throws \RuntimeException
      * @throws \InvalidArgumentException
      */
-    public function remove($entryIdentifier)
+    public function remove(string $entryIdentifier): bool
     {
         return parent::remove($entryIdentifier);
     }
@@ -174,7 +174,7 @@ class AssetFileBackend extends AbstractBackend implements TaggableBackendInterfa
      * @param string $searchedTag The tag to search for
      * @return array An array with identifiers of all matching entries. An empty array if no entries matched
      */
-    public function findIdentifiersByTag($searchedTag)
+    public function findIdentifiersByTag(string $searchedTag): array
     {
         $entryIdentifiers = [];
         $now = $GLOBALS['EXEC_TIME'];
@@ -210,7 +210,7 @@ class AssetFileBackend extends AbstractBackend implements TaggableBackendInterfa
     /**
      * Removes all cache entries of this cache and sets the frozen flag to FALSE.
      */
-    public function flush()
+    public function flush(): void
     {
         parent::flush();
     }
@@ -220,7 +220,7 @@ class AssetFileBackend extends AbstractBackend implements TaggableBackendInterfa
      *
      * @param string $tag The tag the entries must have
      */
-    public function flushByTag($tag)
+    public function flushByTag(string $tag): void
     {
         $identifiers = $this->findIdentifiersByTag($tag);
         if (empty($identifiers)) {
@@ -228,6 +228,13 @@ class AssetFileBackend extends AbstractBackend implements TaggableBackendInterfa
         }
         foreach ($identifiers as $entryIdentifier) {
             $this->remove($entryIdentifier);
+        }
+    }
+
+    public function flushByTags(array $tags): void
+    {
+        foreach ($tags as $tag) {
+            $this->flushByTag($tag);
         }
     }
 
@@ -257,7 +264,7 @@ class AssetFileBackend extends AbstractBackend implements TaggableBackendInterfa
     /**
      * Does garbage collection
      */
-    public function collectGarbage()
+    public function collectGarbage(): void
     {
         for ($directoryIterator = new \DirectoryIterator($this->cacheDirectory); $directoryIterator->valid(); $directoryIterator->next()) {
             if ($directoryIterator->isDot()) {
@@ -299,7 +306,7 @@ class AssetFileBackend extends AbstractBackend implements TaggableBackendInterfa
      * @throws \InvalidArgumentException
      * @return mixed Potential return value from the include operation
      */
-    public function requireOnce($entryIdentifier)
+    public function requireOnce(string $entryIdentifier): mixed
     {
         if ($entryIdentifier !== PathUtility::basename($entryIdentifier)) {
             throw new \InvalidArgumentException('The specified entry identifier must not contain a path segment.', 1282073036);

@@ -18,7 +18,7 @@ use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 class LanguageMenuProcessor extends \TYPO3\CMS\Frontend\DataProcessing\LanguageMenuProcessor
 {
 
-    protected function validateConfiguration()
+    protected function validateConfiguration(): void
     {
         $this->allowedConfigurationKeys = array_merge($this->allowedConfigurationKeys,[
             'overrides',
@@ -28,45 +28,26 @@ class LanguageMenuProcessor extends \TYPO3\CMS\Frontend\DataProcessing\LanguageM
         parent::validateConfiguration();
     }
 
-    /**
-     * @param ContentObjectRenderer $cObj The data of the content element or page
-     * @param array $contentObjectConfiguration The configuration of Content Object
-     * @param array $processorConfiguration The configuration of this processor
-     * @param array $processedData Key/value store of processed data (e.g. to be passed to a Fluid View)
-     * @return array the processed data as key/value store
-     */
     public function process(ContentObjectRenderer $cObj, array $contentObjectConfiguration, array $processorConfiguration, array $processedData): array
     {
-        $this->cObj = $cObj;
-        $this->processorConfiguration = $processorConfiguration;
+        $processedData = parent::process($cObj, $contentObjectConfiguration, $processorConfiguration, $processedData);
 
-        // Validate and Build Configuration
-        $this->validateAndBuildConfiguration();
-
-        // Process Configuration
-        $menuContentObject = $this->contentObjectFactory->getContentObject('HMENU', $cObj->getRequest(), $cObj);
-        $renderedMenu = $menuContentObject->render($this->menuConfig);
-        if (!$renderedMenu) {
+        $as = $this->getConfigurationValue('as');
+        if (empty($processedData[$as]) || !is_array($processedData[$as])) {
             return $processedData;
         }
 
-        $overrides = $this->processorConfiguration['overrides.'] ?? [];
+        $overrides = $processorConfiguration['overrides.'] ?? [];
 
-        // Process menu
-        $menu = json_decode($renderedMenu, true);
         $processedMenu = [];
-        if (is_iterable($menu)) {
-            foreach ($menu as $key => $language) {
-                $processedMenu[$key] = $language;
-                if (array_key_exists($language['hreflang'],$overrides)) {
-                    $processedMenu[$key]['link'] = $overrides[$language['hreflang']];
-                }
+        foreach ($processedData[$as] as $key => $language) {
+            $processedMenu[$key] = $language;
+            if (isset($language['hreflang']) && array_key_exists($language['hreflang'], $overrides)) {
+                $processedMenu[$key]['link'] = $overrides[$language['hreflang']];
             }
         }
-        // Return processed data
-        $processedData[$this->getConfigurationValue('as')] = $processedMenu;
+
+        $processedData[$as] = $processedMenu;
         return $processedData;
     }
-
-
 }
