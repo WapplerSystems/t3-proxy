@@ -11,13 +11,16 @@ declare(strict_types=1);
 namespace WapplerSystems\Proxy;
 
 use Exception;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareTrait;
 use TYPO3\CMS\Core\Cache\Frontend\FrontendInterface;
 use WapplerSystems\Proxy\Event\ProxyEvent;
 use WapplerSystems\Proxy\Http\Request;
 use WapplerSystems\Proxy\Http\Response;
 
-class Proxy
+class Proxy implements LoggerAwareInterface
 {
+    use LoggerAwareTrait;
 
     private $dispatcher;
 
@@ -34,6 +37,8 @@ class Proxy
     private string $baseUrl;
     private string $localBaseUri;
 
+    private int $cacheTtl = 0;
+
     public function __construct(?FrontendInterface $cache = null)
     {
         $this->cache = $cache;
@@ -42,6 +47,16 @@ class Proxy
     public function setOutputBuffering($outputBuffering)
     {
         $this->outputBuffering = $outputBuffering;
+    }
+
+    public function setCacheTtl(int $ttl): void
+    {
+        $this->cacheTtl = $ttl;
+    }
+
+    public function getCacheTtl(): int
+    {
+        return $this->cacheTtl;
     }
 
     private function headerCallback($ch, $headers)
@@ -132,6 +147,11 @@ class Proxy
         }
     }
 
+    private function getCacheIdentifier(Request $request): string
+    {
+        return 'proxy_' . md5($request->getUrl());
+    }
+
     /**
      * @param Request $request
      * @return Response
@@ -144,17 +164,40 @@ class Proxy
         $this->request = $request;
         $this->response = new Response();
 
+        // Check cache for GET requests
+        if ($this->cache && $request->getMethod() === 'GET') {
+            $cacheIdentifier = $this->getCacheIdentifier($request);
+            $cachedData = $this->cache->get($cacheIdentifier);
+            if ($cachedData !== false) {
+                $cached = json_decode($cachedData, true);
+                if (is_array($cached)) {
+                    $this->logger?->debug('Proxy cache hit', ['url' => $request->getUrl()]);
+                    $this->response->setStatusCode($cached['statusCode']);
+                    $this->response->setContent($cached['content']);
+                    foreach ($cached['headers'] as $name => $value) {
+                        $this->response->headers->set($name, $value);
+                    }
+
+                    $this->dispatch('request.complete', new ProxyEvent([
+                        'request' => $this->request,
+                        'response' => $this->response
+                    ]));
+
+                    return $this->response;
+                }
+            }
+        }
+
         $options = [
             CURLOPT_CONNECTTIMEOUT => 10,
-            CURLOPT_TIMEOUT => 0,
+            CURLOPT_TIMEOUT => 30,
 
             // don't return anything - we have other functions for that
             CURLOPT_RETURNTRANSFER => false,
             CURLOPT_HEADER => false,
 
-            // don't bother with ssl
-            CURLOPT_SSL_VERIFYPEER => false,
-            CURLOPT_SSL_VERIFYHOST => false,
+            CURLOPT_SSL_VERIFYPEER => true,
+            CURLOPT_SSL_VERIFYHOST => 2,
 
             // we will take care of redirects
             CURLOPT_FOLLOWLOCATION => false,
@@ -192,14 +235,21 @@ class Proxy
             $ch = curl_init();
             curl_setopt_array($ch, $options);
 
-            // fetch the status - if exception if throw any at callbacks, then the error will be supressed
-            $result = @curl_exec($ch);
+            $result = curl_exec($ch);
 
-            // there must have been an error if at this point
             if (!$result) {
-                $error = sprintf('(%d) %s', curl_errno($ch), curl_error($ch));
-                throw new Exception($error);
+                $errno = curl_errno($ch);
+                $error = curl_error($ch);
+                $this->logger?->error('Proxy cURL error', [
+                    'url' => $this->request->getUri(),
+                    'errno' => $errno,
+                    'error' => $error
+                ]);
+                curl_close($ch);
+                throw new Exception(sprintf('(%d) %s', $errno, $error));
             }
+
+            curl_close($ch);
 
             // we have output waiting in the buffer?
             $this->response->setContent($this->outputBuffer);
@@ -208,6 +258,23 @@ class Proxy
             $this->outputBuffer = null;
         }
 
+        // Cache successful GET responses
+        if ($this->cache && $request->getMethod() === 'GET' && $this->response->getStatusCode() === 200) {
+            $cacheIdentifier = $this->getCacheIdentifier($request);
+            $cacheData = json_encode([
+                'statusCode' => $this->response->getStatusCode(),
+                'content' => $this->response->getContent(),
+                'headers' => $this->response->headers->all(),
+            ]);
+            if ($cacheData !== false) {
+                try {
+                    $this->cache->set($cacheIdentifier, $cacheData, ['proxy'], $this->cacheTtl);
+                    $this->logger?->debug('Proxy cache set', ['url' => $request->getUrl(), 'ttl' => $this->cacheTtl]);
+                } catch (\Throwable $e) {
+                    $this->logger?->warning('Proxy cache write failed', ['url' => $request->getUrl(), 'error' => $e->getMessage()]);
+                }
+            }
+        }
 
         $this->dispatch('request.complete', new ProxyEvent([
             'request' => $this->request,
@@ -218,7 +285,7 @@ class Proxy
     }
 
 
-    public function getCache(): FrontendInterface
+    public function getCache(): ?FrontendInterface
     {
         return $this->cache;
     }
@@ -226,7 +293,8 @@ class Proxy
 
     public function makeAbsoluteUrl($url): string
     {
-        $host = parse_url($url)['host'];
+        $parsed = parse_url($url);
+        $host = $parsed['host'] ?? null;
         if ($host === null) {
             // relative path
             $url = dirname($this->request->getUrl()) . '/' . $url;
@@ -241,7 +309,7 @@ class Proxy
         $urlParts = parse_url($url);
         if (str_starts_with($url, '#')) return $url;
 
-        if ($urlParts['host'] === null) {
+        if (($urlParts['host'] ?? null) === null) {
             // relative path
             $url = dirname($this->request->getUrl()) . '/' . $url;
             $url = str_replace($this->baseUrl, $this->localBaseUri, $url);

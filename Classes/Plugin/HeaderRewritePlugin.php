@@ -68,11 +68,6 @@ class HeaderRewritePlugin extends AbstractPlugin
 
             $response->headers->set('Content-Disposition', 'filename="' . $filename . '"');
         }
-
-        // do not ever cache our proxy pages!
-        $response->headers->set("cache-control", "no-cache, no-store, must-revalidate");
-        $response->headers->set("pragma", "no-cache");
-        $response->headers->set("expires", 0);
     }
 
 }
