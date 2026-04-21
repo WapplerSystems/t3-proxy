@@ -41,6 +41,13 @@
                     <type>text</type>
                 </config>
             </settings.meta.whitelist>
+            <settings.cacheTtl>
+                <label>Cache TTL (seconds, 0 = no cache)</label>
+                <config>
+                    <type>number</type>
+                    <default>0</default>
+                </config>
+            </settings.cacheTtl>
             <settings.plugins>
                 <label>Plugins</label>
                 <config>

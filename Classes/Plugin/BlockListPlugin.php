@@ -61,7 +61,7 @@ class BlockListPlugin extends AbstractPlugin
         }
 
         if ($ip_match) {
-            $m = re_match($ip_match, $user_ip);
+            $m = $this->matchIp($user_ip, (array)$ip_match);
 
             // ip matched and we are in block_mode
             // ip NOT matched and we are in allow mode
@@ -70,5 +70,67 @@ class BlockListPlugin extends AbstractPlugin
             }
         }
     }
-}
 
+    /**
+     * Match an IP address against a list of patterns.
+     * Supports wildcard (1.2.3.*), CIDR (1.2.3.0/24), and range (1.2.3.0-1.2.3.255) formats.
+     */
+    private function matchIp(string $ip, array $patterns): bool
+    {
+        $ipLong = ip2long($ip);
+        if ($ipLong === false) {
+            return false;
+        }
+
+        foreach ($patterns as $pattern) {
+            $pattern = trim($pattern);
+            if ($pattern === '') {
+                continue;
+            }
+
+            // Range format: 1.2.3.0-1.2.3.255
+            if (str_contains($pattern, '-')) {
+                [$rangeStart, $rangeEnd] = explode('-', $pattern, 2);
+                $startLong = ip2long(trim($rangeStart));
+                $endLong = ip2long(trim($rangeEnd));
+                if ($startLong !== false && $endLong !== false && $ipLong >= $startLong && $ipLong <= $endLong) {
+                    return true;
+                }
+                continue;
+            }
+
+            // CIDR format: 1.2.3.0/24 or 1.2.3.4/255.255.255.0
+            if (str_contains($pattern, '/')) {
+                [$subnet, $mask] = explode('/', $pattern, 2);
+                if (str_contains($mask, '.')) {
+                    // Netmask format: 255.255.255.0
+                    $maskLong = ip2long($mask);
+                } else {
+                    // CIDR prefix length
+                    $maskLong = -1 << (32 - (int)$mask);
+                }
+                $subnetLong = ip2long($subnet);
+                if ($subnetLong !== false && $maskLong !== false && ($ipLong & $maskLong) === ($subnetLong & $maskLong)) {
+                    return true;
+                }
+                continue;
+            }
+
+            // Wildcard format: 1.2.3.*
+            if (str_contains($pattern, '*')) {
+                $regex = '/^' . str_replace(['*', '.'], ['\\d+', '\\.'], $pattern) . '$/';
+                if (preg_match($regex, $ip)) {
+                    return true;
+                }
+                continue;
+            }
+
+            // Exact match
+            if ($ip === $pattern) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+}
