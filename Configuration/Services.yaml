@@ -6,14 +6,18 @@ services:
 
   WapplerSystems\Proxy\:
     resource: '../Classes/*'
-    exclude: '../Classes/Domain/Model/*'
 
-  #cache.proxy_assets:
-  #  class: TYPO3\CMS\Core\Cache\Frontend\FrontendInterface
-  #  factory: ['@TYPO3\CMS\Core\Cache\CacheManager', 'getCache']
-  #  arguments: ['proxy_assets']
+  cache.proxy_responses:
+    class: TYPO3\CMS\Core\Cache\Frontend\FrontendInterface
+    factory: ['@TYPO3\CMS\Core\Cache\CacheManager', 'getCache']
+    arguments: ['proxy_responses']
 
-  #WapplerSystems\Proxy\Proxy:
-    #public: true
-    #arguments:
-      #$cache: '@cache.proxy_assets'
+  WapplerSystems\Proxy\Command\FlushCacheCommand:
+    tags:
+      - name: console.command
+        command: 'proxy:cache:flush'
+
+  WapplerSystems\Proxy\Proxy:
+    public: true
+    arguments:
+      $cache: '@cache.proxy_responses'

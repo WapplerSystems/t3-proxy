@@ -12,10 +12,11 @@ namespace WapplerSystems\Proxy\Controller;
 
 
 use Psr\Http\Message\ResponseInterface;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareTrait;
 use TYPO3\CMS\Core\Http\ImmediateResponseException;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
-use TYPO3\CMS\Extbase\Mvc\Web\Routing\UriBuilder;
 use TYPO3\CMS\Frontend\Controller\ErrorController;
 use WapplerSystems\Proxy\Http\Request;
 use WapplerSystems\Proxy\Proxy;
@@ -23,8 +24,9 @@ use WapplerSystems\Proxy\Proxy;
 /**
  *
  */
-class ProxyController extends ActionController
+class ProxyController extends ActionController implements LoggerAwareInterface
 {
+    use LoggerAwareTrait;
 
     /**
      * @param string $path
@@ -34,9 +36,8 @@ class ProxyController extends ActionController
     public function processAction(string $path = ''): ResponseInterface
     {
 
-        $uriBuilder = GeneralUtility::makeInstance(UriBuilder::class);
-        $uriBuilder->setTargetPageUid($GLOBALS['TSFE']->id)->setCreateAbsoluteUri(true);
-        $localBaseUri = $uriBuilder->buildFrontendUri();
+        $this->uriBuilder->setTargetPageUid($GLOBALS['TSFE']->id)->setCreateAbsoluteUri(true);
+        $localBaseUri = $this->uriBuilder->buildFrontendUri();
 
         $url = $this->settings['startUrl'];
         $baseUrl = $this->settings['baseUrl'];
@@ -50,6 +51,9 @@ class ProxyController extends ActionController
         $proxy->setLocalBaseUri($localBaseUri);
         $proxy->setBaseUrl($baseUrl);
 
+        // Configure cache TTL from settings (default: 3600 seconds)
+        $cacheTtl = (int)($this->settings['cacheTtl'] ?? 3600);
+        $proxy->setCacheTtl($cacheTtl);
 
         $pluginNames = explode(',', $this->settings['plugins'] ?? '');
 
@@ -59,16 +63,33 @@ class ProxyController extends ActionController
             }
         }
 
-        $response = $proxy->forward($request);
+        try {
+            $response = $proxy->forward($request);
+        } catch (\Exception $e) {
+            $this->logger?->error('Proxy request failed', [
+                'url' => $url,
+                'error' => $e->getMessage()
+            ]);
+
+            $errorResponse = GeneralUtility::makeInstance(ErrorController::class)->pageNotFoundAction(
+                $GLOBALS['TYPO3_REQUEST'],
+                'Proxy request failed'
+            );
+            throw new ImmediateResponseException($errorResponse, 1590468229);
+        }
+
         if ($response->getStatusCode() !== 200) {
+            $this->logger?->warning('Proxy received non-200 response', [
+                'url' => $url,
+                'statusCode' => $response->getStatusCode()
+            ]);
 
             $message = 'No entry found!';
-            $response = GeneralUtility::makeInstance(ErrorController::class)->pageNotFoundAction(
+            $errorResponse = GeneralUtility::makeInstance(ErrorController::class)->pageNotFoundAction(
                 $GLOBALS['TYPO3_REQUEST'],
                 $message
             );
-            throw new ImmediateResponseException($response, 1590468229);
-
+            throw new ImmediateResponseException($errorResponse, 1590468229);
         }
 
         $html = $response->getBody();

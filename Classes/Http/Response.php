@@ -108,13 +108,13 @@ class Response
     public function setContent($content)
     {
         $this->content = (string)$content;
+        if ($this->content === '') {
+            return;
+        }
         try {
-            $this->dom->loadStr((string)$content);
-        } catch (ChildNotFoundException $e) {
-        } catch (CircularException $e) {
-        } catch (ContentLengthException $e) {
-        } catch (LogicalException $e) {
-        } catch (StrictException $e) {
+            $this->dom->loadStr($this->content);
+        } catch (ChildNotFoundException | CircularException | ContentLengthException | LogicalException | StrictException $e) {
+            // DOM parsing failed - content may not be HTML
         }
     }
 

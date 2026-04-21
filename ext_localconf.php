@@ -27,8 +27,9 @@ ExtensionUtility::configurePlugin(
 );
 
 
-//$GLOBALS['TYPO3_CONF_VARS']['SYS']['caching']['cacheConfigurations']['proxy_assets'] ??= [];
-//$GLOBALS['TYPO3_CONF_VARS']['SYS']['caching']['cacheConfigurations']['proxy_assets']['backend'] ??= \WapplerSystems\Proxy\Cache\Backend\AssetFileBackend::class;
+$GLOBALS['TYPO3_CONF_VARS']['SYS']['caching']['cacheConfigurations']['proxy_responses'] ??= [];
+$GLOBALS['TYPO3_CONF_VARS']['SYS']['caching']['cacheConfigurations']['proxy_responses']['backend'] ??= \TYPO3\CMS\Core\Cache\Backend\FileBackend::class;
+$GLOBALS['TYPO3_CONF_VARS']['SYS']['caching']['cacheConfigurations']['proxy_responses']['options'] ??= ['defaultLifetime' => 0];
 
 
 $GLOBALS['TYPO3_CONF_VARS']['SYS']['routing']['aspects']['PathMapper'] = \WapplerSystems\Proxy\Routing\Aspect\PathMapper::class;
@@ -53,6 +54,3 @@ $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['proxy']['plugins'] = array_merge($GLOBAL
   'Typo3CssPlugin' => Typo3CssPlugin::class,
   'Typo3MetaPlugin' => Typo3MetaPlugin::class,
 ]);
-
-
-

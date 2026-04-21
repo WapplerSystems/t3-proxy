@@ -53,6 +53,16 @@
                     </config>
                 </TCEforms>
             </settings.meta.whitelist>
+            <settings.cacheTtl>
+                <TCEforms>
+                    <label>Cache TTL (seconds, 0 = no cache)</label>
+                    <config>
+                        <type>input</type>
+                        <eval>int</eval>
+                        <default>0</default>
+                    </config>
+                </TCEforms>
+            </settings.cacheTtl>
             <settings.plugins>
                 <TCEforms>
                     <label>Plugins</label>
