@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <rect width="64" height="64" rx="8" fill="#e74c3c"/>
+  <g stroke="#fff" stroke-width="2.5" stroke-linecap="round" fill="none">
+    <!-- Server left -->
+    <rect x="6" y="22" width="16" height="20" rx="2"/>
+    <line x1="10" y1="28" x2="18" y2="28"/>
+    <line x1="10" y1="32" x2="18" y2="32"/>
+    <line x1="10" y1="36" x2="18" y2="36"/>
+    <!-- Arrow -->
+    <line x1="24" y1="32" x2="40" y2="32"/>
+    <polyline points="36,28 40,32 36,36"/>
+    <!-- Server right -->
+    <rect x="42" y="22" width="16" height="20" rx="2"/>
+    <line x1="46" y1="28" x2="54" y2="28"/>
+    <line x1="46" y1="32" x2="54" y2="32"/>
+    <line x1="46" y1="36" x2="54" y2="36"/>
+  </g>
+  <!-- Proxy label -->
+  <circle cx="32" cy="48" r="10" fill="#2980b9"/>
+  <text x="32" y="52" text-anchor="middle" fill="#fff" font-size="10" font-family="Arial,sans-serif" font-weight="bold">P</text>
+</svg>
