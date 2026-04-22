@@ -164,6 +164,11 @@ class Proxy implements LoggerAwareInterface
         $this->request = $request;
         $this->response = new Response();
 
+        $this->logger?->info('Proxy forward start', [
+            'method' => $request->getMethod(),
+            'url' => $request->getUrl(),
+        ]);
+
         // Check cache for GET requests
         if ($this->cache && $request->getMethod() === 'GET') {
             $cacheIdentifier = $this->getCacheIdentifier($request);
@@ -171,7 +176,12 @@ class Proxy implements LoggerAwareInterface
             if ($cachedData !== false) {
                 $cached = json_decode($cachedData, true);
                 if (is_array($cached)) {
-                    $this->logger?->debug('Proxy cache hit', ['url' => $request->getUrl()]);
+                    $this->logger?->info('Proxy cache hit', [
+                        'url' => $request->getUrl(),
+                        'cachedStatusCode' => $cached['statusCode'],
+                        'cachedContentLength' => strlen($cached['content'] ?? ''),
+                        'cachedHeaders' => array_keys($cached['headers'] ?? []),
+                    ]);
                     $this->response->setStatusCode($cached['statusCode']);
                     $this->response->setContent($cached['content']);
                     foreach ($cached['headers'] as $name => $value) {
@@ -185,6 +195,15 @@ class Proxy implements LoggerAwareInterface
 
                     return $this->response;
                 }
+                $this->logger?->warning('Proxy cache data invalid (json_decode failed)', [
+                    'url' => $request->getUrl(),
+                    'cacheIdentifier' => $cacheIdentifier,
+                ]);
+            } else {
+                $this->logger?->info('Proxy cache miss', [
+                    'url' => $request->getUrl(),
+                    'cacheIdentifier' => $cacheIdentifier,
+                ]);
             }
         }
 
@@ -235,30 +254,57 @@ class Proxy implements LoggerAwareInterface
             $ch = curl_init();
             curl_setopt_array($ch, $options);
 
+            $curlStartTime = microtime(true);
             $result = curl_exec($ch);
+            $curlDuration = round((microtime(true) - $curlStartTime) * 1000, 1);
 
             if (!$result) {
                 $errno = curl_errno($ch);
                 $error = curl_error($ch);
+                $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
                 $this->logger?->error('Proxy cURL error', [
                     'url' => $this->request->getUri(),
                     'errno' => $errno,
-                    'error' => $error
+                    'error' => $error,
+                    'httpCode' => $httpCode,
+                    'durationMs' => $curlDuration,
                 ]);
                 curl_close($ch);
                 throw new Exception(sprintf('(%d) %s', $errno, $error));
             }
 
+            $curlInfo = curl_getinfo($ch);
             curl_close($ch);
 
             // we have output waiting in the buffer?
             $this->response->setContent($this->outputBuffer);
 
+            $contentLength = strlen($this->outputBuffer ?? '');
+
+            $this->logger?->info('Proxy cURL response received', [
+                'url' => $this->request->getUri(),
+                'statusCode' => $this->response->getStatusCode(),
+                'contentLength' => $contentLength,
+                'contentType' => $this->response->headers->get('content-type'),
+                'durationMs' => $curlDuration,
+                'curlEffectiveUrl' => $curlInfo['url'] ?? null,
+                'curlPrimaryIp' => $curlInfo['primary_ip'] ?? null,
+                'curlRedirectCount' => $curlInfo['redirect_count'] ?? 0,
+            ]);
+
+            if ($contentLength === 0) {
+                $this->logger?->warning('Proxy received empty response body', [
+                    'url' => $this->request->getUri(),
+                    'statusCode' => $this->response->getStatusCode(),
+                    'responseHeaders' => $this->response->headers->all(),
+                ]);
+            }
+
             // saves memory I would assume?
             $this->outputBuffer = null;
         }
 
-        // Cache successful GET responses
+        // Cache successful GET responses - only cache 200 responses
         if ($this->cache && $request->getMethod() === 'GET' && $this->response->getStatusCode() === 200) {
             $cacheIdentifier = $this->getCacheIdentifier($request);
             $cacheData = json_encode([
@@ -269,11 +315,20 @@ class Proxy implements LoggerAwareInterface
             if ($cacheData !== false) {
                 try {
                     $this->cache->set($cacheIdentifier, $cacheData, ['proxy'], $this->cacheTtl);
-                    $this->logger?->debug('Proxy cache set', ['url' => $request->getUrl(), 'ttl' => $this->cacheTtl]);
+                    $this->logger?->info('Proxy cache set', [
+                        'url' => $request->getUrl(),
+                        'ttl' => $this->cacheTtl,
+                        'contentLength' => strlen($this->response->getContent()),
+                    ]);
                 } catch (\Throwable $e) {
                     $this->logger?->warning('Proxy cache write failed', ['url' => $request->getUrl(), 'error' => $e->getMessage()]);
                 }
             }
+        } elseif ($this->cache && $request->getMethod() === 'GET') {
+            $this->logger?->info('Proxy response not cached (non-200 status)', [
+                'url' => $request->getUrl(),
+                'statusCode' => $this->response->getStatusCode(),
+            ]);
         }
 
         $this->dispatch('request.complete', new ProxyEvent([

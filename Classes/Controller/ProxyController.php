@@ -45,6 +45,14 @@ class ProxyController extends ActionController implements LoggerAwareInterface
             $url = $baseUrl . $path;
         }
 
+        $this->logger?->info('ProxyController processAction start', [
+            'path' => $path,
+            'resolvedUrl' => $url,
+            'baseUrl' => $baseUrl,
+            'localBaseUri' => $localBaseUri,
+            'pageUid' => $GLOBALS['TSFE']->id,
+        ]);
+
         $request = new Request('GET', $url);
 
         $proxy = GeneralUtility::makeInstance(Proxy::class);
@@ -68,7 +76,9 @@ class ProxyController extends ActionController implements LoggerAwareInterface
         } catch (\Exception $e) {
             $this->logger?->error('Proxy request failed', [
                 'url' => $url,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
+                'exceptionClass' => get_class($e),
+                'trace' => $e->getTraceAsString(),
             ]);
 
             $errorResponse = GeneralUtility::makeInstance(ErrorController::class)->pageNotFoundAction(
@@ -81,7 +91,9 @@ class ProxyController extends ActionController implements LoggerAwareInterface
         if ($response->getStatusCode() !== 200) {
             $this->logger?->warning('Proxy received non-200 response', [
                 'url' => $url,
-                'statusCode' => $response->getStatusCode()
+                'statusCode' => $response->getStatusCode(),
+                'responseHeaders' => $response->headers->all(),
+                'contentLength' => strlen($response->getContent()),
             ]);
 
             $message = 'No entry found!';
@@ -93,6 +105,13 @@ class ProxyController extends ActionController implements LoggerAwareInterface
         }
 
         $html = $response->getBody();
+
+        $this->logger?->info('ProxyController processAction success', [
+            'url' => $url,
+            'statusCode' => $response->getStatusCode(),
+            'bodyLength' => strlen($html),
+            'contentType' => $response->headers->get('content-type'),
+        ]);
 
         return $this->htmlResponse('<!-- proxy start -->' . $html . '<!-- proxy end -->');
     }
