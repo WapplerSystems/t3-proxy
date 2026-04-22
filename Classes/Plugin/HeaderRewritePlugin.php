@@ -11,10 +11,13 @@ declare(strict_types=1);
 namespace WapplerSystems\Proxy\Plugin;
 
 use Exception;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareTrait;
 use WapplerSystems\Proxy\Event\ProxyEvent;
 
-class HeaderRewritePlugin extends AbstractPlugin
+class HeaderRewritePlugin extends AbstractPlugin implements LoggerAwareInterface
 {
+    use LoggerAwareTrait;
 
     function onBeforeRequest(ProxyEvent $event)
     {
@@ -33,19 +36,36 @@ class HeaderRewritePlugin extends AbstractPlugin
         $response = $event['response'];
         $request_url = $event['request']->getUri();
 
+        $code = $response->getStatusCode();
+        $text = $response->getStatusText();
+
+        $this->logger?->info('HeaderRewritePlugin received response', [
+            'url' => $request_url,
+            'statusCode' => $code,
+            'statusText' => $text,
+            'receivedHeaders' => $response->headers->all(),
+        ]);
+
         // proxify header location value
         if ($response->headers->has('location')) {
 
             $location = $response->headers->get('location');
 
+            $this->logger?->info('HeaderRewritePlugin redirect detected', [
+                'url' => $request_url,
+                'location' => $location,
+            ]);
+
             // just in case this is a relative url like: /en
             $response->headers->set('location', proxify_url($location, $request_url));
         }
 
-        $code = $response->getStatusCode();
-        $text = $response->getStatusText();
-
         if ($code >= 400 && $code <= 600) {
+            $this->logger?->error('HeaderRewritePlugin error status from upstream', [
+                'url' => $request_url,
+                'statusCode' => $code,
+                'statusText' => $text,
+            ]);
             throw new Exception("Error accessing resource: {$code} - {$text}");
         }
 
@@ -68,6 +88,11 @@ class HeaderRewritePlugin extends AbstractPlugin
 
             $response->headers->set('Content-Disposition', 'filename="' . $filename . '"');
         }
+
+        $this->logger?->info('HeaderRewritePlugin headers after processing', [
+            'url' => $request_url,
+            'forwardedHeaders' => $response->headers->all(),
+        ]);
 
     }
 
