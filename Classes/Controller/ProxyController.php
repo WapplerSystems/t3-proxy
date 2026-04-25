@@ -35,8 +35,9 @@ class ProxyController extends ActionController implements LoggerAwareInterface
      */
     public function processAction(string $path = ''): ResponseInterface
     {
+        $pageUid = $this->request->getAttribute('routing')?->getPageId() ?? 0;
 
-        $this->uriBuilder->setTargetPageUid($GLOBALS['TSFE']->id)->setCreateAbsoluteUri(true);
+        $this->uriBuilder->setTargetPageUid($pageUid)->setCreateAbsoluteUri(true);
         $localBaseUri = $this->uriBuilder->buildFrontendUri();
 
         $url = $this->settings['startUrl'];
@@ -50,7 +51,7 @@ class ProxyController extends ActionController implements LoggerAwareInterface
             'resolvedUrl' => $url,
             'baseUrl' => $baseUrl,
             'localBaseUri' => $localBaseUri,
-            'pageUid' => $GLOBALS['TSFE']->id,
+            'pageUid' => $pageUid,
         ]);
 
         $request = new Request('GET', $url);
