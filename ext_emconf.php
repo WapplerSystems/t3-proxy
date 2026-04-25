@@ -12,7 +12,7 @@ $EM_CONF['proxy'] = [
     'version' => '14.0.0',
     'constraints' => [
         'depends' => [
-            'typo3' => '14.0.0-14.4.99',
+            'typo3' => '14.0.0-14.3.99',
         ],
         'conflicts' => [
         ],
