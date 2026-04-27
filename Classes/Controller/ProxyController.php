@@ -63,6 +63,14 @@ class ProxyController extends ActionController implements LoggerAwareInterface
         $cacheTtl = (int)($this->settings['cacheTtl'] ?? 3600);
         $proxy->setCacheTtl($cacheTtl);
 
+        $ipResolveSetting = strtolower(trim((string)($this->settings['ipResolve'] ?? '')));
+        $ipResolve = match ($ipResolveSetting) {
+            'v4', 'ipv4', '4' => CURL_IPRESOLVE_V4,
+            'v6', 'ipv6', '6' => CURL_IPRESOLVE_V6,
+            default => null,
+        };
+        $proxy->setIpResolve($ipResolve);
+
         $pluginNames = explode(',', $this->settings['plugins'] ?? '');
 
         foreach ($pluginNames as $pluginName) {

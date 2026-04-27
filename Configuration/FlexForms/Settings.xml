@@ -63,6 +63,30 @@
                     </config>
                 </TCEforms>
             </settings.cacheTtl>
+            <settings.ipResolve>
+                <TCEforms>
+                    <label>IP resolve (force IPv4/IPv6 for outbound request)</label>
+                    <config>
+                        <type>select</type>
+                        <renderType>selectSingle</renderType>
+                        <items>
+                            <numIndex index="0">
+                                <numIndex index="0">Auto (default)</numIndex>
+                                <numIndex index="1"></numIndex>
+                            </numIndex>
+                            <numIndex index="1">
+                                <numIndex index="0">Force IPv4</numIndex>
+                                <numIndex index="1">v4</numIndex>
+                            </numIndex>
+                            <numIndex index="2">
+                                <numIndex index="0">Force IPv6</numIndex>
+                                <numIndex index="1">v6</numIndex>
+                            </numIndex>
+                        </items>
+                        <default></default>
+                    </config>
+                </TCEforms>
+            </settings.ipResolve>
             <settings.plugins>
                 <TCEforms>
                     <label>Plugins</label>

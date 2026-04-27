@@ -1,0 +1,7 @@
+plugin.tx_proxy {
+    settings {
+        # Force outbound proxy request to IPv4 ("v4") or IPv6 ("v6"). Empty = auto.
+        # FlexForm value on the plugin instance overrides this default.
+        ipResolve =
+    }
+}

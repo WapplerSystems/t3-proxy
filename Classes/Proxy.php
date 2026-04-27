@@ -39,9 +39,16 @@ class Proxy implements LoggerAwareInterface
 
     private int $cacheTtl = 0;
 
+    private ?int $ipResolve = null;
+
     public function __construct(?FrontendInterface $cache = null)
     {
         $this->cache = $cache;
+    }
+
+    public function setIpResolve(?int $ipResolve): void
+    {
+        $this->ipResolve = $ipResolve;
     }
 
     public function setOutputBuffering($outputBuffering)
@@ -227,6 +234,10 @@ class Proxy implements LoggerAwareInterface
         $config_options = Config::get('curl', []);
 
         $options = Helpers::array_merge($options, $config_options);
+
+        if ($this->ipResolve !== null) {
+            $options[CURLOPT_IPRESOLVE] = $this->ipResolve;
+        }
 
         $options[CURLOPT_HEADERFUNCTION] = [$this, 'headerCallback'];
         $options[CURLOPT_WRITEFUNCTION] = [$this, 'writeCallback'];
