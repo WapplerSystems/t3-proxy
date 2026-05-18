@@ -31,6 +31,10 @@ $GLOBALS['TYPO3_CONF_VARS']['SYS']['caching']['cacheConfigurations']['proxy_resp
 $GLOBALS['TYPO3_CONF_VARS']['SYS']['caching']['cacheConfigurations']['proxy_responses']['backend'] ??= \TYPO3\CMS\Core\Cache\Backend\FileBackend::class;
 $GLOBALS['TYPO3_CONF_VARS']['SYS']['caching']['cacheConfigurations']['proxy_responses']['options'] ??= ['defaultLifetime' => 0];
 
+$GLOBALS['TYPO3_CONF_VARS']['SYS']['caching']['cacheConfigurations']['proxy_url_seen'] ??= [];
+$GLOBALS['TYPO3_CONF_VARS']['SYS']['caching']['cacheConfigurations']['proxy_url_seen']['backend'] ??= \TYPO3\CMS\Core\Cache\Backend\FileBackend::class;
+$GLOBALS['TYPO3_CONF_VARS']['SYS']['caching']['cacheConfigurations']['proxy_url_seen']['options'] ??= ['defaultLifetime' => 0];
+
 
 $GLOBALS['TYPO3_CONF_VARS']['SYS']['routing']['aspects']['PathMapper'] = \WapplerSystems\Proxy\Routing\Aspect\PathMapper::class;
 

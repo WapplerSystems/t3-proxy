@@ -1,0 +1,2 @@
+# cat=logging; type=boolean; label=Enable URL discovery logging: Log every proxied URL exactly once (deduplicated across requests via the proxy_url_seen cache). Useful to find out which target URLs are actually hit through the proxy. Disable when no longer needed.
+enableUrlLogging = 0

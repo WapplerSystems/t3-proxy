@@ -12,6 +12,16 @@ services:
     factory: ['@TYPO3\CMS\Core\Cache\CacheManager', 'getCache']
     arguments: ['proxy_responses']
 
+  cache.proxy_url_seen:
+    class: TYPO3\CMS\Core\Cache\Frontend\FrontendInterface
+    factory: ['@TYPO3\CMS\Core\Cache\CacheManager', 'getCache']
+    arguments: ['proxy_url_seen']
+
+  WapplerSystems\Proxy\Service\UrlDiscoveryLogger:
+    public: true
+    arguments:
+      $cache: '@cache.proxy_url_seen'
+
   WapplerSystems\Proxy\Command\FlushCacheCommand:
     tags:
       - name: console.command

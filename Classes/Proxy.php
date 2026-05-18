@@ -17,6 +17,7 @@ use TYPO3\CMS\Core\Cache\Frontend\FrontendInterface;
 use WapplerSystems\Proxy\Event\ProxyEvent;
 use WapplerSystems\Proxy\Http\Request;
 use WapplerSystems\Proxy\Http\Response;
+use WapplerSystems\Proxy\Service\UrlDiscoveryLogger;
 
 class Proxy implements LoggerAwareInterface
 {
@@ -32,6 +33,8 @@ class Proxy implements LoggerAwareInterface
 
     private ?FrontendInterface $cache;
 
+    private ?UrlDiscoveryLogger $urlDiscoveryLogger;
+
     private bool $statusFound = false;
 
     private string $baseUrl;
@@ -39,9 +42,10 @@ class Proxy implements LoggerAwareInterface
 
     private int $cacheTtl = 0;
 
-    public function __construct(?FrontendInterface $cache = null)
+    public function __construct(?FrontendInterface $cache = null, ?UrlDiscoveryLogger $urlDiscoveryLogger = null)
     {
         $this->cache = $cache;
+        $this->urlDiscoveryLogger = $urlDiscoveryLogger;
     }
 
     public function setOutputBuffering($outputBuffering)
@@ -163,6 +167,8 @@ class Proxy implements LoggerAwareInterface
         // prepare request and response objects
         $this->request = $request;
         $this->response = new Response();
+
+        $this->urlDiscoveryLogger?->logOnce($request->getUrl());
 
         $this->logger?->info('Proxy forward start', [
             'method' => $request->getMethod(),
